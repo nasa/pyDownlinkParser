@@ -5,8 +5,9 @@ import pandas as pd
 from collections import defaultdict
 from ccsdspy.constants import BITS_PER_BYTE, PRIMARY_HEADER_NUM_BYTES
 from pydownlinkparser.parsers.config.ecm_config import ecm_packet
-from pydownlinkparser.parsers.config.suda_config import suda_packet
+import pydownlinkparser.parsers.config.suda_config as suda
 
+suda_packet = suda
 
 with open('data/suda_0409517390-0283787_cleansplit.dat', 'rb') as mixed_file:
     # dictionary mapping integer apid to BytesIO
