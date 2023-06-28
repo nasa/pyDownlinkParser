@@ -1,7 +1,6 @@
 import io
 
 import ccsdspy
-import numpy as np
 import pandas as pd
 from collections import defaultdict
 from ccsdspy.constants import BITS_PER_BYTE, PRIMARY_HEADER_NUM_BYTES
