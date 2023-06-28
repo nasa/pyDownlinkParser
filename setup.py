@@ -2,7 +2,7 @@ from setuptools import find_namespace_packages
 from setuptools import setup
 
 setup(
-    name="CCSDSPyParse",
+    name="pydownlinkparser",
     description="Parsing the packets using CCSDSPy",
     url="https://github-fn.jpl.nasa.gov/loubrieu/new_ppp",
     install_requires=[
