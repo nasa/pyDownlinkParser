@@ -5,7 +5,10 @@ import numpy as np
 from collections import defaultdict
 from ccsdspy.constants import BITS_PER_BYTE, PRIMARY_HEADER_NUM_BYTES
 
-packet_bytes = ccsdspy.utils.split_packet_bytes('ecm_0406193095-0283151.DAT')
+#file_path = 'ecm_0406193095-0283151.DAT'
+file_path = '/Users/loubrieu/Documents/europa-clipper/sudo/sci_packetAnalyzer/suda_0409517390-0283787_cleansplit.dat'
+
+packet_bytes = ccsdspy.utils.split_packet_bytes(file_path)
 
 for i in range(5):
     print(packet_bytes[i].hex())
@@ -21,7 +24,7 @@ if missing_bytes > 0:
     print(f"The last packet is incomplete. {missing_bytes} bytes "
           "would need to be added to complete the last packet")
 
-with open('ecm_0406193095-0283151.DAT', 'rb') as mixed_file:
+with open(file_path, 'rb') as mixed_file:
     # dictionary mapping integer apid to BytesIO
     stream_by_apid = ccsdspy.utils.split_by_apid(mixed_file)
 
