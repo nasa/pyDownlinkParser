@@ -34,6 +34,8 @@ for apid, stream in stream_by_apid.items():
     pkt = d.get(apid, default_pkt)
     output[apid] = pkt.load(stream)
 
+df = pd.DataFrame.from_dict(output,orient='index')
 
+print(df)
 
 
