@@ -7,7 +7,7 @@ from ccsdspy.constants import BITS_PER_BYTE, PRIMARY_HEADER_NUM_BYTES
 from pydownlinkparser.parsers.config.ecm_config import ecm_packet
 import pydownlinkparser.parsers.config.suda_config as suda
 
-suda_packet = suda
+suda_packet = suda.SudaCatalogListStructure
 
 with open('data/suda_0409517390-0283787_cleansplit.dat', 'rb') as mixed_file:
     # dictionary mapping integer apid to BytesIO
@@ -24,7 +24,7 @@ default_pkt = ccsdspy.VariableLength(
 )
 
 d = {
-    0xb: suda_packet
+    1419: suda_packet
 }
 
 output = {}
