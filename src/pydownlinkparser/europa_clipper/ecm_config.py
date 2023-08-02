@@ -1,6 +1,6 @@
 import ccsdspy
 from ccsdspy.converters import StringifyBytesConverter
-from pydownlinkparser.europa_clipper.common_config import hs_header
+from src.pydownlinkparser.europa_clipper.common_config import hs_header
 
 read_reg_structure = ccsdspy.VariableLength(
     [ccsdspy.PacketField(name="Instrument SCLK Time second", bit_length=32, data_type='uint'),
