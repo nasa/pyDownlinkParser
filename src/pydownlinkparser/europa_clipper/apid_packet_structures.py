@@ -2,7 +2,8 @@ import ccsdspy as ccsdspy
 from ccsdspy.constants import BITS_PER_BYTE
 from pydownlinkparser.europa_clipper.suda_config import SudaCatalogListStructure, hs_suda, adp_suda, EVENT_LOG_PKT, \
     COMMAND_LOG_PKT, HARDWARE_CENTRIC_PKT, SOFTWARE_CENTRIC_PKT, MEM_DUMP_PKT, FLASH_TABLE_DUMP_PKT, DWELL_PKT, \
-    CATALOG_LIST_PKT, ADC_REGISTER_PKT, EVENT_MESSAGE_PKT, SudaWaveformPacketStructure, POSTMORTEM_LOG_PKT
+    CATALOG_LIST_PKT, ADC_REGISTER_PKT, EVENT_MESSAGE_PKT, SudaWaveformPacketStructure, POSTMORTEM_LOG_PKT, \
+    SudaWaveformPacketStructureWithMD
 
 from pydownlinkparser.europa_clipper.ecm_config import hs_pkt_structure, read_reg_structure, FG1_LOW_PKT, FG1_HIGH_PKT, \
     FG2_LOW_PKT, FG3_LOW_PKT, FG2_HIGH_PKT, FG3_HIGH_PKT, adp_pkt
@@ -71,11 +72,21 @@ default_pkt = ccsdspy.VariableLength(
     ]
 )
 
-apid_multi_pkt = {
-    1424: {{True: SudaWaveformPacketStructure,
-           False: SudaWaveformPacketStructure}}
-}
 
+def is_metadata(decision_value):
+    return decision_value == 0x1
+
+
+apid_multi_pkt = {
+    1424: dict(
+        decision_field='SCI0TYPE',
+        decision_fun=is_metadata,
+        pkts={
+            True: SudaWaveformPacketStructure,
+            False: SudaWaveformPacketStructureWithMD
+        }
+    )
+}
 
 apid_names = {
     1232: 'read_reg_structure',
@@ -106,4 +117,3 @@ apid_names = {
     1424: 'SudaWaveformPacketStructure',
     1432: 'CATALOG_LIST_PKT',
 }
-
