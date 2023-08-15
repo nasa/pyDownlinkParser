@@ -67,7 +67,7 @@ apid_packets = {
 default_pkt = ccsdspy.VariableLength(
     [
         ccsdspy.PacketArray(
-            name="unused", data_type="uint", bit_length=BITS_PER_BYTE, array_shape="expand"
+            name="data", data_type="uint", bit_length=BITS_PER_BYTE, array_shape="expand"
         )
     ]
 )
@@ -86,6 +86,10 @@ apid_multi_pkt = {
             False: SudaWaveformPacketStructureWithMD
         }
     )
+}
+
+multi_apid_names = {
+    1424: 'SudaWF'
 }
 
 apid_names = {
@@ -114,6 +118,5 @@ apid_names = {
     1418: 'EVENT_MESSAGE_PKT',
     1419: 'SudaCatalogListStructure',
     1420: 'ADC_REGISTER_PKT',
-    1424: 'SudaWaveformPacketStructure',
     1432: 'CATALOG_LIST_PKT',
 }
