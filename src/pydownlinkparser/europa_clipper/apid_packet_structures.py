@@ -78,6 +78,19 @@ def is_metadata(decision_value):
     return decision_value == 0x1
 
 
+N = 0
+
+
+def sequence(decision_value):
+    N += 1
+    if N < 90:
+        return "90firsts"
+    if N == 90:
+        return "91st"
+    else:
+        return "92nd"
+
+
 apid_multi_pkt = {
     1424: dict(
         decision_field='SCI0TYPE',
@@ -85,6 +98,14 @@ apid_multi_pkt = {
         pkts={
             True: SudaWaveformPacketStructure,
             False: SudaWaveformPacketStructureWithMD
+        }
+    ),
+    1392: dict(
+        decision_fun=sequence,
+        pkts={
+            "90firsts": ...
+            "91st": ...
+            ...
         }
     )
 }

@@ -69,8 +69,12 @@ for apid, streams in stream_by_apid.items():
     multi_parsed_apids = {}
     if apid in apid_multi_pkt:
         decision_fun = apid_multi_pkt[apid]['decision_fun']
-        decision_field = apid_multi_pkt[apid]['decision_field']
-        keys = [decision_fun(decision_value) for decision_value in list(parsed_apids[decision_field])]
+        if 'decision_field' in apid_multi_pkt[apid]:
+            decision_field = apid_multi_pkt[apid]['decision_field']
+            keys = [decision_fun(decision_value) for decision_value in list(parsed_apids[decision_field])]
+        else:
+            keys = [decision_fun() for _ in range(0, len(parsed_apids))]
+
         buffer = parse_multi(keys, stream1)
         for key, minor_pkt in apid_multi_pkt[apid]['pkts'].items():
             multi_parsed_apids[key] = minor_pkt.load(buffer[key], include_primary_header=True)
