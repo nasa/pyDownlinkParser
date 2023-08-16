@@ -62,7 +62,7 @@ apid_packets = {
     1381: COMP_FRAME_PKT,
     1382: FRAME_SUPPORT_PKT,
     1385: DIAG_FLAG_PKT,
-    # 1392: MISEUncompFramePacketStructureFactory
+    1392: default_pkt
 }
 
 default_pkt = ccsdspy.VariableLength(
