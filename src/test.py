@@ -4,7 +4,10 @@ import ccsdspy
 #     FPIE_REG_DUMP_PKT, CEU_REG_DUMP_PKT, FPIE_REG_SETTINGS_PKT, FPMC_MEM_DUMP_PKT, FPMC_MEM_CHKSUM_PKT, FLASH_ERROR_PKT, \
 #     DEFERRED_CMD_ECHO_PKT, UNCOMP_FRAME_PKT, COMP_FRAME_PKT, FRAME_SUPPORT_PKT, DIAG_FLAG_PKT
 # from ccsdspy.constants import BITS_PER_BYTE
+import bitstring
 #
+from src.pydownlinkparser.europa_clipper.apid_packet_structures import apid_packets, default_pkt
+
 # # import pandas as pd
 # # from ccsdspy.converters import StringifyBytesConverter
 # # from ccsdspy.constants import BITS_PER_BYTE
@@ -180,13 +183,59 @@ import ccsdspy
 #
 
 
-filename = "/Users/nischayn/PycharmProjects/ccsdspyParse/data/mise_removed_header_file51_7.bin"
+# filename = "/Users/nischayn/PycharmProjects/ccsdspyParse/data/ecm_removed_header1.bin"
+#
+# with open(filename, 'rb') as mixed_file:
+#     # dictionary mapping integer apid to BytesIO
+#     stream_by_apid = ccsdspy.utils.split_by_apid(mixed_file)
+#
+# for apid, streams in stream_by_apid.items():
+#     pkt = apid_packets.get(apid, default_pkt)
+#     parsed_apids = pkt.load(streams)
+#     print(parsed_apids)
+#
+# rows1 = []
+# for apid, stream in stream_by_apid.items():
+#     print(apid)
 
-with open(filename, 'rb') as mixed_file:
-    # dictionary mapping integer apid to BytesIO
+
+newfile_ecm = '/Users/nischayn/PycharmProjects/ccsdspyParse/data/ecm_new_1.bin'
+filename_ecm = '/Users/nischayn/PycharmProjects/ccsdspyParse/data/ecm_mag_testcase6_cmds_split_out.log'
+
+
+def parse_file_ecm(filename_ecm):
+    with open(filename_ecm, 'rb') as f:
+        bit_stream = bitstring.ConstBitStream(f)
+
+        buffer = bytes()
+
+        while bit_stream.pos < bit_stream.length:
+            control_word = bit_stream.read('uintle:32')
+            sse_length = control_word
+
+            # skipping 32 bits of unused
+            _ = bit_stream.read(32)
+            sse_length -= 4
+
+            packet_data = bit_stream.read(sse_length * 8)
+            buffer += packet_data.tobytes()
+
+        return buffer
+
+
+ecm_buffer = parse_file_ecm(filename_ecm)
+with open(newfile_ecm, 'wb') as f:
+    f.write(ecm_buffer)
+    f.close()
+
+with open(newfile_ecm, 'rb') as mixed_file:
     stream_by_apid = ccsdspy.utils.split_by_apid(mixed_file)
 
-rows1 = []
 for apid, stream in stream_by_apid.items():
     print(apid)
 
+for apid, streams in stream_by_apid.items():
+    pkt = apid_packets.get(apid, default_pkt)
+    parsed_apids = pkt.load(streams)
+
+rows1 = []
