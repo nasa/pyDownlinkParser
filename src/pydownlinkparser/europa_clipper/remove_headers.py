@@ -4,28 +4,33 @@ import bitstring
 BYTE_SIZE_IN_BITS = 8
 
 
-def parse_file_ecm(filename_ecm):
+def parse_bdsem_with_headers(filename_ecm):
     buffer = bytes()
-    newfile_ecm = '/Users/nischayn/PycharmProjects/ccsdspyParse/data/ecm_new_1.bin'
+    newfile_bdsem = '/Users/nischayn/PycharmProjects/ccsdspyParse/data/ecm_new_1.bin'
     with open(filename_ecm, 'rb') as f:
         bit_stream = bitstring.ConstBitStream(f)
 
         while bit_stream.pos < bit_stream.length:
             control_word = bit_stream.read('uintle:32')
             sse_length = control_word
+
+            # skipping 32 bits of unused
+            _ = bit_stream.read(32)
+            sse_length -= 4
+
             packet_data = bit_stream.read(sse_length * 8)
             buffer += packet_data.tobytes()
 
     f.close()
-    with open(newfile_ecm, 'wb') as f:
+    with open(newfile_bdsem, 'wb') as f:
         f.write(buffer)
         f.close()
-    return newfile_ecm
+    return newfile_bdsem
 
 
-def parse_file_suda(filename_suda):
+def parse_bdsem_without_headers(filename_suda):
     buffer = bytes()
-    newfile_suda = '/Users/nischayn/PycharmProjects/ccsdspyParse/data/suda_new_6.bin'
+    newfile_bdsem_n = '/Users/nischayn/PycharmProjects/ccsdspyParse/data/suda_new_6.bin'
     with open(filename_suda, 'rb') as f:
         bit_stream = bitstring.ConstBitStream(f)
         while bit_stream.pos < bit_stream.length:
@@ -36,19 +41,19 @@ def parse_file_suda(filename_suda):
             buffer += packet_header.tobytes() + packet_data.tobytes() + crc.tobytes()
 
     f.close()
-    with open(newfile_suda, 'wb') as f:
+    with open(newfile_bdsem_n, 'wb') as f:
         f.write(buffer)
         f.close()
-    return newfile_suda
+    return newfile_bdsem_n
 
 
-def parse_file_mise(filename_mise):
+def parse_raw_with_headers(filename_mise):
     header_size = 4
     ccsds_header_size = 6
     byte_size = 8
     offset_size = 1
     buffer = bytes()
-    newfile_mise = '/Users/nischayn/PycharmProjects/ccsdspyParse/data/mise_new_1'
+    newfile_raw = '/Users/nischayn/PycharmProjects/ccsdspyParse/data/mise_new_1'
     with open(filename_mise, 'rb') as f:
         raw_data = f.read()
         starting_idx = []
@@ -66,10 +71,10 @@ def parse_file_mise(filename_mise):
             buffer += data
 
     f.close()
-    with open(newfile_mise, 'wb') as f:
+    with open(newfile_raw, 'wb') as f:
         f.write(buffer)
         f.close()
-    return newfile_mise
+    return newfile_raw
 
 
 def start_sequence(seq):

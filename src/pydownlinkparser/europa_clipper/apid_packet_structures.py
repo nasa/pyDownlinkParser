@@ -61,7 +61,8 @@ apid_packets = {
     1380: UNCOMP_FRAME_PKT,
     1381: COMP_FRAME_PKT,
     1382: FRAME_SUPPORT_PKT,
-    1385: DIAG_FLAG_PKT
+    1385: DIAG_FLAG_PKT,
+    # 1392: MISEUncompFramePacketStructureFactory
 }
 
 default_pkt = ccsdspy.VariableLength(
@@ -105,6 +106,7 @@ apid_names = {
     1344: 'mise_hs',
     1346: 'COMMAND_ECHO_PKT',
     1350: 'BOOT_STATUS_PKT',
+    # 1392: 'MISEUncompFramePacketStructureFactory',
     1408: 'hs_suda',
     1409: 'adp_suda',
     1410: 'EVENT_LOG_PKT',

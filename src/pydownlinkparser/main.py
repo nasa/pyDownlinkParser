@@ -1,3 +1,4 @@
+import os.path
 import sys
 
 import ccsdspy
@@ -20,11 +21,11 @@ mode = args.mode
 header_status = args.header
 
 if mode == "BDSEM" and header_status == "Y":
-    new_file = remove_headers.parse_file_ecm(filename)
-elif mode == "BDSEM" and header_status == "N":
-    new_file = remove_headers.parse_file_suda(filename)
+    new_file = remove_headers.parse_bdsem_with_headers(filename)
+elif mode == "BDSEM" and (header_status == "N" or not header_status):
+    new_file = remove_headers.parse_bdsem_without_headers(filename)
 elif mode == "RAW" and header_status == "Y":
-    new_file = remove_headers.parse_file_mise(filename)
+    new_file = remove_headers.parse_raw_with_headers(filename)
 else:
     print('Please refer README.TXT on how to enter the configuration')
     sys.exit()
@@ -83,4 +84,6 @@ for apid, streams in stream_by_apid.items():
     else:
         dfs[apid] = df
 
-export_xlsx('ecm_111.xlsx', dfs)
+file_base, _ = os.path.splitext(filename)
+xlsx_filename = file_base + ".xlsx"
+export_xlsx(xlsx_filename, dfs)
