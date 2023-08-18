@@ -6,6 +6,7 @@ BYTE_SIZE_IN_BITS = 8
 
 def parse_bdsem_with_headers(filename_ecm):
     buffer = bytes()
+    # TODO: don't harcode file papth
     newfile_bdsem = '/Users/nischayn/PycharmProjects/ccsdspyParse/data/ecm_new_1.bin'
     with open(filename_ecm, 'rb') as f:
         bit_stream = bitstring.ConstBitStream(f)
@@ -22,6 +23,7 @@ def parse_bdsem_with_headers(filename_ecm):
             buffer += packet_data.tobytes()
 
     f.close()
+    # TODO keep the buffer as result, don't write on file system
     with open(newfile_bdsem, 'wb') as f:
         f.write(buffer)
         f.close()

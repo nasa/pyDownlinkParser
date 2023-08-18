@@ -1,5 +1,7 @@
 import ccsdspy as ccsdspy
 from ccsdspy.constants import BITS_PER_BYTE
+# TODO: have on line per import
+# TODO be consistent with the case and with the type of object imported (object vs instance), i would suggest to import only objects
 from pydownlinkparser.europa_clipper.suda_config import SudaCatalogListStructure, hs_suda, adp_suda, EVENT_LOG_PKT, \
     COMMAND_LOG_PKT, HARDWARE_CENTRIC_PKT, SOFTWARE_CENTRIC_PKT, MEM_DUMP_PKT, FLASH_TABLE_DUMP_PKT, DWELL_PKT, \
     CATALOG_LIST_PKT, ADC_REGISTER_PKT, EVENT_MESSAGE_PKT, SudaWaveformPacketStructure, POSTMORTEM_LOG_PKT, \
@@ -13,6 +15,7 @@ from pydownlinkparser.europa_clipper.mise_config import mise_hs, mise_adp, COMMA
     FPIE_REG_DUMP_PKT, CEU_REG_DUMP_PKT, FPIE_REG_SETTINGS_PKT, FPMC_MEM_DUMP_PKT, FPMC_MEM_CHKSUM_PKT, FLASH_ERROR_PKT, \
     DEFERRED_CMD_ECHO_PKT, UNCOMP_FRAME_PKT, COMP_FRAME_PKT, FRAME_SUPPORT_PKT, DIAG_FLAG_PKT
 
+# for each supported APID, define a ccsdspy.VariableLength packet definition
 apid_packets = {
     1419: SudaCatalogListStructure(),
     1232: read_reg_structure,
@@ -65,6 +68,7 @@ apid_packets = {
     1392: default_pkt
 }
 
+# TODO move the default_pkt outside of europa_clipper subpackage, I would suggest 'pydownlinkparser.core' or 'pydownlinkparser.util'
 default_pkt = ccsdspy.VariableLength(
     [
         ccsdspy.PacketArray(
@@ -78,17 +82,15 @@ def is_metadata(decision_value):
     return decision_value == 0x1
 
 
-N = 0
-
-
-def sequence(decision_value):
-    N += 1
-    if N < 90:
-        return "90firsts"
-    if N == 90:
-        return "91st"
-    else:
-        return "92nd"
+# N = 0
+# def sequence(decision_value):
+#     N += 1
+#     if N < 90:
+#         return "90firsts"
+#     if N == 90:
+#         return "91st"
+#     else:
+#         return "92nd"
 
 
 apid_multi_pkt = {
@@ -100,15 +102,20 @@ apid_multi_pkt = {
             False: SudaWaveformPacketStructureWithMD
         }
     ),
-    1392: dict(
-        decision_fun=sequence,
-        pkts={
-            "90firsts": ...
-            "91st": ...
-            ...
-        }
-    )
+    # 1392: dict(
+    #     decision_fun=sequence,
+    #     pkts={
+    #         "90firsts": ...
+    #         "91st": ...
+    #         ...
+    #     }
+    # )
 }
+
+# TODO we could also add a name attribute to all the VariableLength structures, by creating in the core package a NamedVariableLength object.
+# the name would be a property of the object, we would not need to manage the dictionnary after
+# we also need a fall off case where the object will be a VariableLength object with no name,
+# we would then use the object name by introspection and add a sequence number to avoid collisions
 
 multi_apid_names = {
     1424: 'SudaWF'
