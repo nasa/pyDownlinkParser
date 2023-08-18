@@ -1,19 +1,73 @@
-import ccsdspy as ccsdspy
+"""
+...
+"""
+import ccsdspy
 from ccsdspy.constants import BITS_PER_BYTE
+
+from .ecm_config import adp_pkt
+from .ecm_config import FG1_HIGH_PKT
+from .ecm_config import FG1_LOW_PKT
+from .ecm_config import FG2_HIGH_PKT
+from .ecm_config import FG2_LOW_PKT
+from .ecm_config import FG3_HIGH_PKT
+from .ecm_config import FG3_LOW_PKT
+from .ecm_config import hs_pkt_structure
+from .ecm_config import read_reg_structure
+from .mise_config import ALARM_PKT
+from .mise_config import BOOT_STATUS_PKT
+from .mise_config import CEU_REG_DUMP_PKT
+from .mise_config import COMMAND_ECHO_PKT
+from .mise_config import COMP_FRAME_PKT
+from .mise_config import DEFERRED_CMD_ECHO_PKT
+from .mise_config import DIAG_FLAG_PKT
+from .mise_config import FLASH_ERROR_PKT
+from .mise_config import FPIE_REG_DUMP_PKT
+from .mise_config import FPIE_REG_SETTINGS_PKT
+from .mise_config import FPMC_MEM_CHKSUM_PKT
+from .mise_config import FPMC_MEM_DUMP_PKT
+from .mise_config import FRAME_SUPPORT_PKT
+from .mise_config import MACRO_CHKSUM_PKT
+from .mise_config import MACRO_DUMP_PKT
+from .mise_config import MEM_CHKSUM_PKT
+from .mise_config import MEM_DUMP_PKT
+from .mise_config import mise_adp
+from .mise_config import mise_hs
+from .mise_config import MON_LIMITS_PKT
+from .mise_config import PARAM_PKTS
+from .mise_config import STATUS_PKT
+from .mise_config import TEXT_PKT
+from .mise_config import UNCOMP_FRAME_PKT
+from .suda_config import ADC_REGISTER_PKT
+from .suda_config import adp_suda
+from .suda_config import CATALOG_LIST_PKT
+from .suda_config import COMMAND_LOG_PKT
+from .suda_config import DWELL_PKT
+from .suda_config import EVENT_LOG_PKT
+from .suda_config import EVENT_MESSAGE_PKT
+from .suda_config import FLASH_TABLE_DUMP_PKT
+from .suda_config import HARDWARE_CENTRIC_PKT
+from .suda_config import hs_suda
+from .suda_config import MEM_DUMP_PKT
+from .suda_config import POSTMORTEM_LOG_PKT
+from .suda_config import SOFTWARE_CENTRIC_PKT
+from .suda_config import SudaCatalogListStructure
+from .suda_config import SudaWaveformPacketStructure
+from .suda_config import SudaWaveformPacketStructureWithMD
+
 # TODO: have on line per import
 # TODO be consistent with the case and with the type of object imported (object vs instance), i would suggest to import only objects
-from pydownlinkparser.europa_clipper.suda_config import SudaCatalogListStructure, hs_suda, adp_suda, EVENT_LOG_PKT, \
-    COMMAND_LOG_PKT, HARDWARE_CENTRIC_PKT, SOFTWARE_CENTRIC_PKT, MEM_DUMP_PKT, FLASH_TABLE_DUMP_PKT, DWELL_PKT, \
-    CATALOG_LIST_PKT, ADC_REGISTER_PKT, EVENT_MESSAGE_PKT, SudaWaveformPacketStructure, POSTMORTEM_LOG_PKT, \
-    SudaWaveformPacketStructureWithMD
 
-from pydownlinkparser.europa_clipper.ecm_config import hs_pkt_structure, read_reg_structure, FG1_LOW_PKT, FG1_HIGH_PKT, \
-    FG2_LOW_PKT, FG3_LOW_PKT, FG2_HIGH_PKT, FG3_HIGH_PKT, adp_pkt
-
-from pydownlinkparser.europa_clipper.mise_config import mise_hs, mise_adp, COMMAND_ECHO_PKT, ALARM_PKT, MEM_CHKSUM_PKT, \
-    MEM_DUMP_PKT, STATUS_PKT, BOOT_STATUS_PKT, MACRO_CHKSUM_PKT, MACRO_DUMP_PKT, MON_LIMITS_PKT, PARAM_PKTS, TEXT_PKT, \
-    FPIE_REG_DUMP_PKT, CEU_REG_DUMP_PKT, FPIE_REG_SETTINGS_PKT, FPMC_MEM_DUMP_PKT, FPMC_MEM_CHKSUM_PKT, FLASH_ERROR_PKT, \
-    DEFERRED_CMD_ECHO_PKT, UNCOMP_FRAME_PKT, COMP_FRAME_PKT, FRAME_SUPPORT_PKT, DIAG_FLAG_PKT
+# TODO move the default_pkt outside of europa_clipper subpackage, I would suggest 'pydownlinkparser.core' or 'pydownlinkparser.util'
+default_pkt = ccsdspy.VariableLength(
+    [
+        ccsdspy.PacketArray(
+            name="data",
+            data_type="uint",
+            bit_length=BITS_PER_BYTE,
+            array_shape="expand",
+        )
+    ]
+)
 
 # for each supported APID, define a ccsdspy.VariableLength packet definition
 apid_packets = {
@@ -65,17 +119,8 @@ apid_packets = {
     1381: COMP_FRAME_PKT,
     1382: FRAME_SUPPORT_PKT,
     1385: DIAG_FLAG_PKT,
-    1392: default_pkt
+    1392: default_pkt,
 }
-
-# TODO move the default_pkt outside of europa_clipper subpackage, I would suggest 'pydownlinkparser.core' or 'pydownlinkparser.util'
-default_pkt = ccsdspy.VariableLength(
-    [
-        ccsdspy.PacketArray(
-            name="data", data_type="uint", bit_length=BITS_PER_BYTE, array_shape="expand"
-        )
-    ]
-)
 
 
 def is_metadata(decision_value):
@@ -95,12 +140,12 @@ def is_metadata(decision_value):
 
 apid_multi_pkt = {
     1424: dict(
-        decision_field='SCI0TYPE',
+        decision_field="SCI0TYPE",
         decision_fun=is_metadata,
         pkts={
             True: SudaWaveformPacketStructure,
-            False: SudaWaveformPacketStructureWithMD
-        }
+            False: SudaWaveformPacketStructureWithMD,
+        },
     ),
     # 1392: dict(
     #     decision_fun=sequence,
@@ -117,36 +162,34 @@ apid_multi_pkt = {
 # we also need a fall off case where the object will be a VariableLength object with no name,
 # we would then use the object name by introspection and add a sequence number to avoid collisions
 
-multi_apid_names = {
-    1424: 'SudaWF'
-}
+multi_apid_names = {1424: "SudaWF"}
 
 apid_names = {
-    1232: 'read_reg_structure',
-    1216: 'hs_pkt_structure',
-    1218: 'FG1_LOW_PKT',
-    1219: 'FG1_HIGH_PKT',
-    1222: 'FG2_LOW_PKT',
-    1223: 'FG2_HIGH_PKT',
-    1226: 'FG3_LOW_PKT',
-    1227: 'FG3_HIGH_PKT',
-    1217: 'adp_pkt',
-    1344: 'mise_hs',
-    1346: 'COMMAND_ECHO_PKT',
-    1350: 'BOOT_STATUS_PKT',
+    1232: "read_reg_structure",
+    1216: "hs_pkt_structure",
+    1218: "FG1_LOW_PKT",
+    1219: "FG1_HIGH_PKT",
+    1222: "FG2_LOW_PKT",
+    1223: "FG2_HIGH_PKT",
+    1226: "FG3_LOW_PKT",
+    1227: "FG3_HIGH_PKT",
+    1217: "adp_pkt",
+    1344: "mise_hs",
+    1346: "COMMAND_ECHO_PKT",
+    1350: "BOOT_STATUS_PKT",
     # 1392: 'MISEUncompFramePacketStructureFactory',
-    1408: 'hs_suda',
-    1409: 'adp_suda',
-    1410: 'EVENT_LOG_PKT',
-    1411: 'POSTMORTEM_LOG_PKT',
-    1412: 'COMMAND_LOG_PKT',
-    1413: 'HARDWARE_CENTRIC_PKT',
-    1414: 'SOFTWARE_CENTRIC_PKT',
-    1415: 'MEM_DUMP_PKT',
-    1416: 'FLASH_TABLE_DUMP_PKT',
-    1417: 'DWELL_PKT',
-    1418: 'EVENT_MESSAGE_PKT',
-    1419: 'SudaCatalogListStructure',
-    1420: 'ADC_REGISTER_PKT',
-    1432: 'CATALOG_LIST_PKT',
+    1408: "hs_suda",
+    1409: "adp_suda",
+    1410: "EVENT_LOG_PKT",
+    1411: "POSTMORTEM_LOG_PKT",
+    1412: "COMMAND_LOG_PKT",
+    1413: "HARDWARE_CENTRIC_PKT",
+    1414: "SOFTWARE_CENTRIC_PKT",
+    1415: "MEM_DUMP_PKT",
+    1416: "FLASH_TABLE_DUMP_PKT",
+    1417: "DWELL_PKT",
+    1418: "EVENT_MESSAGE_PKT",
+    1419: "SudaCatalogListStructure",
+    1420: "ADC_REGISTER_PKT",
+    1432: "CATALOG_LIST_PKT",
 }

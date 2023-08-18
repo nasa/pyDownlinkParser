@@ -18,10 +18,10 @@ For example in command line:
 
 #### Install the latest version of CCSDSPY.
 
-    git clone https://github.com/CCSDSPy/ccsdspy.git 
+    git clone https://github.com/CCSDSPy/ccsdspy.git
     cd ccsdspy
     pip install .
-     
+
 
 #### Deploy the project
 
@@ -30,12 +30,13 @@ Clone the repository
 Install the package
 
     pip install -e '.[dev]'
+    pre-commit install && pre-commit install -t pre-push
 
 Run an example:
 
     python src/pydownlinkparser/main.py
-    
-Steps to run: 
+
+Steps to run:
 1) Clone the repo
 2) In Runtime > Edit Config enter the Filename, Mode and Header Status (Like --file data/ecm_0406193095-0283151.DAT --mode BDSEM --header Y)
 3) Available Modes - BDSEM, RAW; Headers - Y/N

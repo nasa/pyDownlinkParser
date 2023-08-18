@@ -1,6 +1,0 @@
-ccsdspy~=1.1.2.dev11+g54d9fb5
-pydownlinkparser~=0.0.0
-pandas~=2.0.2
-bitstring~=4.0.2
-setuptools~=67.8.0
-numpy~=1.25.0

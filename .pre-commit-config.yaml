@@ -1,0 +1,43 @@
+repos:
+#-   repo: local
+#    #hooks:
+#    -   id: api_docs_gen
+#        name: API Docs Gen
+#        language: system
+#        entry: sphinx-apidoc --separate --force --no-toc --implicit-namespaces eurcsds -o docs/src/api
+#        pass_filenames: false
+
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.2.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+
+-   repo: https://github.com/asottile/reorder_python_imports
+    rev: v3.1.0
+    hooks:
+    -   id: reorder-python-imports
+
+-   repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+    -   id: black
+        language_version: python3.9
+
+-   repo: local
+    hooks:
+    -   id: lint
+        name: Flake8
+        entry: flake8
+        language: system
+        types: [python]
+        exclude: 'test/|docs/'
+
+-   repo: local
+    hooks:
+    -   id: tests
+        name: Tests
+        entry: pytest
+        language: system
+        stages: [push]
+        pass_filenames: false
