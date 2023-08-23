@@ -1,3 +1,5 @@
+import io
+
 import bitstring
 
 BYTE_SIZE_IN_BITS = 8
@@ -5,8 +7,6 @@ BYTE_SIZE_IN_BITS = 8
 
 def parse_bdsem_with_headers(filename_ecm):
     buffer = bytes()
-    # TODO: don't harcode file papth
-    newfile_bdsem = "/Users/nischayn/PycharmProjects/ccsdspyParse/data/ecm_new_1.bin"
     with open(filename_ecm, "rb") as f:
         bit_stream = bitstring.ConstBitStream(f)
 
@@ -21,17 +21,11 @@ def parse_bdsem_with_headers(filename_ecm):
             packet_data = bit_stream.read(sse_length * 8)
             buffer += packet_data.tobytes()
 
-    f.close()
-    # TODO keep the buffer as result, don't write on file system
-    with open(newfile_bdsem, "wb") as f:
-        f.write(buffer)
-        f.close()
-    return newfile_bdsem
+    return io.BytesIO(buffer)
 
 
 def parse_bdsem_without_headers(filename_suda):
     buffer = bytes()
-    newfile_bdsem_n = "/Users/nischayn/PycharmProjects/ccsdspyParse/data/suda_new_6.bin"
     with open(filename_suda, "rb") as f:
         bit_stream = bitstring.ConstBitStream(f)
         while bit_stream.pos < bit_stream.length:
@@ -41,11 +35,7 @@ def parse_bdsem_without_headers(filename_suda):
             crc = bit_stream.read(8)
             buffer += packet_header.tobytes() + packet_data.tobytes() + crc.tobytes()
 
-    f.close()
-    with open(newfile_bdsem_n, "wb") as f:
-        f.write(buffer)
-        f.close()
-    return newfile_bdsem_n
+    return io.BytesIO(buffer)
 
 
 def parse_raw_with_headers(filename_mise):
@@ -60,7 +50,7 @@ def parse_raw_with_headers(filename_mise):
         starting_idx = []
 
         for i in range(0, len(raw_data[:-byte_size])):
-            if start_sequence(raw_data[i : i + byte_size]):
+            if start_sequence(raw_data[i: i + byte_size]):
                 starting_idx.append(i)
 
         for s in starting_idx:
@@ -68,14 +58,10 @@ def parse_raw_with_headers(filename_mise):
             hdr_end = hdr_start + ccsds_header_size
             ccsds_header = raw_data[hdr_start:hdr_end]
             pkt_len = int.from_bytes(ccsds_header[-2:], byteorder="big") + offset_size
-            data = raw_data[hdr_start : hdr_end + pkt_len]
+            data = raw_data[hdr_start: hdr_end + pkt_len]
             buffer += data
 
-    f.close()
-    with open(newfile_raw, "wb") as f:
-        f.write(buffer)
-        f.close()
-    return newfile_raw
+    return io.BytesIO(buffer)
 
 
 def start_sequence(seq):

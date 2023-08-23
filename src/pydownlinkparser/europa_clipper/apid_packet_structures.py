@@ -53,21 +53,7 @@ from .suda_config import SOFTWARE_CENTRIC_PKT
 from .suda_config import SudaCatalogListStructure
 from .suda_config import SudaWaveformPacketStructure
 from .suda_config import SudaWaveformPacketStructureWithMD
-
-# TODO: have on line per import
-# TODO be consistent with the case and with the type of object imported (object vs instance), i would suggest to import only objects
-
-# TODO move the default_pkt outside of europa_clipper subpackage, I would suggest 'pydownlinkparser.core' or 'pydownlinkparser.util'
-default_pkt = ccsdspy.VariableLength(
-    [
-        ccsdspy.PacketArray(
-            name="data",
-            data_type="uint",
-            bit_length=BITS_PER_BYTE,
-            array_shape="expand",
-        )
-    ]
-)
+from pydownlinkparser.util import default_pkt
 
 # for each supported APID, define a ccsdspy.VariableLength packet definition
 apid_packets = {

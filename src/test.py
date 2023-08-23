@@ -6,7 +6,7 @@ import ccsdspy
 # from ccsdspy.constants import BITS_PER_BYTE
 import bitstring
 #
-from src.pydownlinkparser.europa_clipper.apid_packet_structures import apid_packets, default_pkt
+from src.pydownlinkparser.europa_clipper.apid_packet_structures import apid_packets
 
 # # import pandas as pd
 # # from ccsdspy.converters import StringifyBytesConverter

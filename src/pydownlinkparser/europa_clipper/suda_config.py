@@ -1,8 +1,8 @@
 import ccsdspy
 import ccsdspy
 from ccsdspy.converters import StringifyBytesConverter
+from pydownlinkparser.util import default_pkt
 
-default_pkt = ccsdspy.PacketArray(name="unused", data_type="uint", bit_length=8, array_shape="expand")
 
 Major_APID = 0x16
 
@@ -309,7 +309,7 @@ SudaWaveformPacketStructure = ccsdspy.VariableLength([
 ])
 
 SudaWaveformPacketStructureWithMD = ccsdspy.VariableLength([
-ccsdspy.PacketField(name='SHCOARSE', bit_length=32, data_type='uint'),
+    ccsdspy.PacketField(name='SHCOARSE', bit_length=32, data_type='uint'),
     ccsdspy.PacketField(name='SHFINE', bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name='SCI0AID', bit_length=32, data_type='uint'),
     ccsdspy.PacketField(name='SCI0TYPE', bit_length=8, data_type='uint'),

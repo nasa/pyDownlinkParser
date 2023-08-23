@@ -297,7 +297,6 @@ UNCOMP_FRAME_PKT = ccsdspy.VariableLength([
     #     bit_length = DATA_ELEMENT_SIZE_BITS
     # ),
     ccsdspy.PacketField(name="Time", bit_length=16 * 8, data_type='uint'),
-    # TODO: adapt to add time stamp and spare
     # ccsdspy.PacketField(name="Pad", PAD_LENGTH_BYTES*8, data_type.PADDING),
     ccsdspy.PacketField(
         name=CRC_FIELD_NAME,

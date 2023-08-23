@@ -98,7 +98,6 @@ class FGXPacketStructure(ccsdspy.VariableLength):
     def _add_channel_samples(self, time_sample_per_packet: int):
         for i in range(time_sample_per_packet):
             for c in range(3, 0, -1):
-                # TODO check the PACKET_FIELD_DATA_TYPE intBE, intLE
                 self._fields.append(
                     ccsdspy.PacketField(
                         f"FGx_CH{c}_{i}", bit_length=24, data_type="int"
