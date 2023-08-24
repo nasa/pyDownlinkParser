@@ -104,7 +104,7 @@ RESERVED_1_BIT_LENGTH = 8 * 8
 RESERVED_2_BIT_LENGTH = 8 * 8
 RESERVED_3_BIT_LENGTH = 824 * 8
 
-mise_hs = ccsdspy.VariableLength([
+hs_mise = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="MSCLK Seconds", bit_length=32, data_type='uint'),
     ccsdspy.PacketField(name="MSCLK Subseconds", bit_length=16, data_type='uint'),
     # operational status
@@ -165,7 +165,7 @@ mise_hs = ccsdspy.VariableLength([
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint'),
 ])
 
-mise_adp = ccsdspy.VariableLength([
+adp_metadata_mise = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="MSCLK Seconds", bit_length=32, data_type='uint'),
     ccsdspy.PacketField(name="Subseconds Pre-zero", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name="AID", bit_length=32, data_type='uint'),
@@ -181,99 +181,99 @@ mise_adp = ccsdspy.VariableLength([
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint'),
 ])
 
-COMMAND_ECHO_PKT = ccsdspy.VariableLength([
+command_echo_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-ALARM_PKT = ccsdspy.VariableLength([
+alarm_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-MEM_CHKSUM_PKT = ccsdspy.VariableLength([
+mem_chksum_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-MEM_DUMP_PKT = ccsdspy.VariableLength([
+mem_dump_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-STATUS_PKT = ccsdspy.VariableLength([
+status_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-BOOT_STATUS_PKT = ccsdspy.VariableLength([
+boot_status_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-MACRO_DUMP_PKT = ccsdspy.VariableLength([
+macro_dump_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-MACRO_CHKSUM_PKT = ccsdspy.VariableLength([
+macro_chksum_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-MON_LIMITS_PKT = ccsdspy.VariableLength([
+mon_limits_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-PARAM_PKTS = ccsdspy.VariableLength([
+param_pkts = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-TEXT_PKT = ccsdspy.VariableLength([
+text_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-FPIE_REG_SETTINGS_PKT = ccsdspy.VariableLength([
+fpie_reg_settings_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-CEU_REG_DUMP_PKT = ccsdspy.VariableLength([
+ceu_reg_dump_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-FPIE_REG_DUMP_PKT = ccsdspy.VariableLength([
+fpie_reg_dump_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-FPMC_MEM_CHKSUM_PKT = ccsdspy.VariableLength([
+fpmc_mem_chksum_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-FPMC_MEM_DUMP_PKT = ccsdspy.VariableLength([
+fpmc_mem_dump_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-FLASH_ERROR_PKT = ccsdspy.VariableLength([
+flash_error_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-DEFERRED_CMD_ECHO_PKT = ccsdspy.VariableLength([
+deferred_cmd_echo_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 sequence_count: int = 0
 PAD_LENGTH_BYTES = 2
 
-UNCOMP_FRAME_PKT = ccsdspy.VariableLength([
+uncomp_frame_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Instrument SCLK Time second", bit_length=SECOND_LENGTH_BYTES * 8,
                         data_type='uint'),
     ccsdspy.PacketField(name="Instrument SCLK Time subsec", bit_length=SUBSECOND_LENGTH_BYTES * 8,
@@ -473,11 +473,11 @@ UNCOMP_FRAME_PKT = ccsdspy.VariableLength([
                         data_type='uint'),
 ])
 
-UNCOMP_FRAME_PKT.add_converted_field("Time", "Time_BIN", StringifyBytesConverter(format="bin"))
+uncomp_frame_pkt.add_converted_field("Time", "Time_BIN", StringifyBytesConverter(format="bin"))
 
 data_length_without_frame = 4 * 9 + 2 * 2 + 14
 
-COMP_FRAME_PKT = ccsdspy.VariableLength([
+comp_frame_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Instrument SCLK Time second", bit_length=8 * SECOND_LENGTH_BYTES, data_type='uint'),
     ccsdspy.PacketField(name="Instrument SCLK Time subsec", bit_length=8 * SUBSECOND_LENGTH_BYTES, data_type='uint'),
     ccsdspy.PacketField(name="Accountability ID", bit_length=8 * AID_LENGTH_BYTES, data_type='uint'),
@@ -491,7 +491,7 @@ COMP_FRAME_PKT = ccsdspy.VariableLength([
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-FRAME_SUPPORT_PKT = ccsdspy.VariableLength([
+frame_support_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
@@ -503,7 +503,7 @@ DIAG_COUNT_PKT = ccsdspy.VariableLength([
     ccsdspy.PacketField(name=CRC_FIELD_NAME, bit_length=16, data_type='uint')
 ])
 
-DIAG_FLAG_PKT = ccsdspy.VariableLength([
+diag_flag_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Instrument SCLK Time second", bit_length=8 * SECOND_LENGTH_BYTES, data_type='uint'),
     ccsdspy.PacketField(name="Instrument SCLK Time subsec", bit_length=8 * SUBSECOND_LENGTH_BYTES, data_type='uint'),
     ccsdspy.PacketField(name="Accountability ID", bit_length=8 * AID_LENGTH_BYTES, data_type='uint'),

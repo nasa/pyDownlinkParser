@@ -73,7 +73,7 @@ hs_fields = [
     ),
 ]
 
-hs_pkt_structure = ccsdspy.VariableLength(hs_header + hs_fields)
+hs_ecm = ccsdspy.VariableLength(hs_header + hs_fields)
 
 
 class FGXPacketStructure(ccsdspy.VariableLength):
@@ -136,14 +136,14 @@ class FGXPacketStructure(ccsdspy.VariableLength):
 TIME_SAMPLE_PER_HF_PACKET = 160
 TIME_SAMPLE_PER_LF_PACKET = 60
 
-FG1_LOW_PKT = FGXPacketStructure(TIME_SAMPLE_PER_LF_PACKET)
-FG1_HIGH_PKT = FGXPacketStructure(TIME_SAMPLE_PER_HF_PACKET)
-FG2_LOW_PKT = FGXPacketStructure(TIME_SAMPLE_PER_LF_PACKET)
-FG2_HIGH_PKT = FGXPacketStructure(TIME_SAMPLE_PER_HF_PACKET)
-FG3_LOW_PKT = FGXPacketStructure(TIME_SAMPLE_PER_LF_PACKET)
-FG3_HIGH_PKT = FGXPacketStructure(TIME_SAMPLE_PER_HF_PACKET)
+fg1_low_pkt = FGXPacketStructure(TIME_SAMPLE_PER_LF_PACKET)
+fg1_high_pkt = FGXPacketStructure(TIME_SAMPLE_PER_HF_PACKET)
+fg2_low_pkt = FGXPacketStructure(TIME_SAMPLE_PER_LF_PACKET)
+fg2_high_pkt = FGXPacketStructure(TIME_SAMPLE_PER_HF_PACKET)
+fg3_low_pkt = FGXPacketStructure(TIME_SAMPLE_PER_LF_PACKET)
+fg3_high_pkt = FGXPacketStructure(TIME_SAMPLE_PER_HF_PACKET)
 
-adp_pkt = ccsdspy.VariableLength(
+adp_metadata_ecm = ccsdspy.VariableLength(
     [
         # secondary header
         ccsdspy.PacketField(name="MSCLK Seconds", bit_length=32, data_type="uint"),

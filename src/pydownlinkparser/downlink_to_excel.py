@@ -15,8 +15,8 @@ def get_parser():
 
 def export_dfs_to_xlsx(dfs, filename1):
     with pd.ExcelWriter(filename1) as writer:
-        for name, df in dfs.items():
-            df.to_excel(writer, sheet_name=name, index=True)
+        for apid, df in dfs.items():
+            df.to_excel(writer, sheet_name=f'{apid}', index=True)
 
 
 def export_ccsds_to_excel(ccsds_file, output_filename):

@@ -40,7 +40,10 @@ def parse_ccsds_file(ccsds_file: str):
         # copy the input stream because the load function alters it
         stream1 = copy.deepcopy(streams)
         pkt = apid_packets.get(apid, default_pkt)
+        multi_parsed_df = pd.DataFrame
         parsed_apids = pkt.load(streams, include_primary_header=True)
+        df = pd.DataFrame.from_dict(parsed_apids)
+        df['APID'] = apid
         multi_parsed_apids = {}
         if apid in apid_multi_pkt:
             keys = get_sub_packet_keys(parsed_apids, apid_multi_pkt[apid])
@@ -49,12 +52,11 @@ def parse_ccsds_file(ccsds_file: str):
                 multi_parsed_apids[key] = minor_pkt.load(
                     buffer[key], include_primary_header=True
                 )
-                dfs[f"{apid} {minor_pkt.__class__.__name__}"] = pd.DataFrame.from_dict(
-                    multi_parsed_apids
-                )
+            multi_parsed_df = pd.DataFrame.from_dict(multi_parsed_apids)
+            multi_parsed_df['APID'] = apid
+            combined_df = pd.concat([df, multi_parsed_df])
+            dfs[apid] = combined_df
         else:
-            dfs[f"{apid} {pkt.__class__.__name__}"] = pd.DataFrame.from_dict(
-                parsed_apids
-            )
+            dfs[apid] = df
 
     return dfs

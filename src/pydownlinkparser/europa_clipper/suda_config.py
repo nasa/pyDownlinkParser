@@ -3,7 +3,6 @@ import ccsdspy
 from ccsdspy.converters import StringifyBytesConverter
 from pydownlinkparser.util import default_pkt
 
-
 Major_APID = 0x16
 
 
@@ -48,6 +47,8 @@ class SudaCatalogListStructure(ccsdspy.VariableLength):
             ccsdspy.PacketField(name='CRCCATLISTPKT', bit_length=16, data_type='int'),
         ])
 
+
+catalog_list = SudaCatalogListStructure()
 
 hs_suda = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="MSCLK Seconds", bit_length=32, data_type='uint'),
@@ -105,7 +106,7 @@ hs_suda = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="VERSION", bit_length=24, data_type='uint'),
 ])
 
-adp_suda = ccsdspy.VariableLength([
+adp_metadata_suda = ccsdspy.VariableLength([
     # secondary header
     ccsdspy.PacketField(name="MSCLK Seconds", bit_length=32, data_type='uint'),
     ccsdspy.PacketField(name="Subseconds Pre-zero", bit_length=16, data_type='uint'),
@@ -122,57 +123,57 @@ adp_suda = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint'),
 ])
 
-EVENT_LOG_PKT = ccsdspy.VariableLength([
+event_log_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
 
-POSTMORTEM_LOG_PKT = ccsdspy.VariableLength([
+postmortem_log_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
 
-COMMAND_LOG_PKT = ccsdspy.VariableLength([
+command_log_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
 
-HARDWARE_CENTRIC_PKT = ccsdspy.VariableLength([
+hardware_centric_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketArray(name="Source Data", data_type="uint", bit_length=8, array_shape='expand'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
 
-SOFTWARE_CENTRIC_PKT = ccsdspy.VariableLength([
+software_centric_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketArray(name="Source Data", data_type="uint", bit_length=8, array_shape='expand'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
 
-MEM_DUMP_PKT = ccsdspy.VariableLength([
+mem_dump_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
 
-FLASH_TABLE_DUMP_PKT = ccsdspy.VariableLength([
+flash_table_dump_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
 
-DWELL_PKT = ccsdspy.VariableLength([
+dwell_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
 
-CATALOG_LIST_PKT = ccsdspy.VariableLength([
+catalog_list_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
 
-ADC_REGISTER_PKT = ccsdspy.VariableLength([
+adc_register_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
 
-EVENT_MESSAGE_PKT = ccsdspy.VariableLength([
+event_message_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name='SHCOARSE', bit_length=32, data_type='uint'),
     ccsdspy.PacketField(name='SHFINE', bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name='ELSEC_EVTPKT', bit_length=32, data_type='uint'),
@@ -187,7 +188,7 @@ EVENT_MESSAGE_PKT = ccsdspy.VariableLength([
     ccsdspy.PacketField(name='CRCEVTPKT', bit_length=16, data_type='uint')
 ])
 
-EVENT_MESSAGE_PKT.add_converted_field("ELID_EVTPKT", "ELID_EVTPKT_BIN", StringifyBytesConverter(format="bin"))
+event_message_pkt.add_converted_field("ELID_EVTPKT", "ELID_EVTPKT_BIN", StringifyBytesConverter(format="bin"))
 
 METADATA_FIELDS = [
     ccsdspy.PacketField(name='SCIDATALENGTH', bit_length=32, data_type='uint'),
@@ -283,7 +284,7 @@ fields_after_data = [
     ccsdspy.PacketField(name='CRCSCI0PKT', bit_length=16, data_type='uint'),
 ]
 
-SudaWaveformPacketStructure = ccsdspy.VariableLength([
+event_wf_transmit = ccsdspy.VariableLength([
     ccsdspy.PacketField(name='SHCOARSE', bit_length=32, data_type='uint'),
     ccsdspy.PacketField(name='SHFINE', bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name='SCI0AID', bit_length=32, data_type='uint'),
@@ -308,7 +309,7 @@ SudaWaveformPacketStructure = ccsdspy.VariableLength([
     ccsdspy.PacketField(name='CRCSCI0PKT', bit_length=16, data_type='uint'),
 ])
 
-SudaWaveformPacketStructureWithMD = ccsdspy.VariableLength([
+event_wf_transmit_with_md = ccsdspy.VariableLength([
     ccsdspy.PacketField(name='SHCOARSE', bit_length=32, data_type='uint'),
     ccsdspy.PacketField(name='SHFINE', bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name='SCI0AID', bit_length=32, data_type='uint'),
