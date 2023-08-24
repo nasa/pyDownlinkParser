@@ -31,6 +31,7 @@ read_reg_structure = ccsdspy.VariableLength(
 read_reg_structure.add_converted_field(
     "REG", "REG_HEX", StringifyBytesConverter(format="hex")
 )
+read_reg_structure.name = 'read_reg_structure'
 
 hs_fields = [
     ccsdspy.PacketField(
@@ -74,6 +75,7 @@ hs_fields = [
 ]
 
 hs_ecm = ccsdspy.VariableLength(hs_header + hs_fields)
+hs_ecm.name = 'hs_ecm'
 
 
 class FGXPacketStructure(ccsdspy.VariableLength):
@@ -143,6 +145,13 @@ fg2_high_pkt = FGXPacketStructure(TIME_SAMPLE_PER_HF_PACKET)
 fg3_low_pkt = FGXPacketStructure(TIME_SAMPLE_PER_LF_PACKET)
 fg3_high_pkt = FGXPacketStructure(TIME_SAMPLE_PER_HF_PACKET)
 
+fg1_low_pkt.name = 'fg1_low_pkt'
+fg1_high_pkt.name = 'fg1_high_pkt'
+fg2_low_pkt.name = 'fg2_low_pkt'
+fg2_high_pkt.name = 'fg2_high_pkt'
+fg3_low_pkt.name = 'fg3_low_pkt'
+fg3_high_pkt.name = 'fg3_high_pkt'
+
 adp_metadata_ecm = ccsdspy.VariableLength(
     [
         # secondary header
@@ -167,3 +176,4 @@ adp_metadata_ecm = ccsdspy.VariableLength(
         ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type="uint"),
     ]
 )
+adp_metadata_ecm.name = 'adp_metadata_ecm'

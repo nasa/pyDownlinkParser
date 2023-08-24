@@ -49,6 +49,7 @@ class SudaCatalogListStructure(ccsdspy.VariableLength):
 
 
 catalog_list = SudaCatalogListStructure()
+catalog_list.name = 'catalog_list'
 
 hs_suda = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="MSCLK Seconds", bit_length=32, data_type='uint'),
@@ -105,6 +106,7 @@ hs_suda = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="FG_GENERAL_REGISTERS", bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name="VERSION", bit_length=24, data_type='uint'),
 ])
+hs_suda.name = 'hs_suda'
 
 adp_metadata_suda = ccsdspy.VariableLength([
     # secondary header
@@ -122,56 +124,67 @@ adp_metadata_suda = ccsdspy.VariableLength([
     # PEC
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint'),
 ])
+adp_metadata_suda.name = 'adp_metadata_suda'
 
 event_log_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
+event_log_pkt.name = 'event_log_pkt'
 
 postmortem_log_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
+postmortem_log_pkt.name = 'postmortem_log_pkt'
 
 command_log_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
+command_log_pkt.name = 'command_log_pkt'
 
 hardware_centric_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketArray(name="Source Data", data_type="uint", bit_length=8, array_shape='expand'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
+hardware_centric_pkt.name = 'hardware_centric_pkt'
 
 software_centric_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketArray(name="Source Data", data_type="uint", bit_length=8, array_shape='expand'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
+software_centric_pkt.name = 'software_centric_pkt'
 
 mem_dump_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
+mem_dump_pkt.name = 'mem_dump_pkt'
 
 flash_table_dump_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
+flash_table_dump_pkt.name = 'flash_table_dump_pkt'
 
 dwell_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
+dwell_pkt.name = 'dwell_pkt'
 
 catalog_list_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
+catalog_list_pkt.name = 'catalog_list_pkt'
 
 adc_register_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="Source Data", bit_length=0, data_type='uint'),
     ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type='uint')
 ])
+adc_register_pkt.name = 'adc_register_pkt'
 
 event_message_pkt = ccsdspy.VariableLength([
     ccsdspy.PacketField(name='SHCOARSE', bit_length=32, data_type='uint'),
@@ -189,6 +202,7 @@ event_message_pkt = ccsdspy.VariableLength([
 ])
 
 event_message_pkt.add_converted_field("ELID_EVTPKT", "ELID_EVTPKT_BIN", StringifyBytesConverter(format="bin"))
+event_message_pkt.name = 'event_message_pkt'
 
 METADATA_FIELDS = [
     ccsdspy.PacketField(name='SCIDATALENGTH', bit_length=32, data_type='uint'),
@@ -308,6 +322,7 @@ event_wf_transmit = ccsdspy.VariableLength([
     ccsdspy.PacketField(name='SYNCSCI0PKT', bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name='CRCSCI0PKT', bit_length=16, data_type='uint'),
 ])
+event_wf_transmit.name = 'event_wf_transmit'
 
 event_wf_transmit_with_md = ccsdspy.VariableLength([
     ccsdspy.PacketField(name='SHCOARSE', bit_length=32, data_type='uint'),
@@ -384,3 +399,4 @@ event_wf_transmit_with_md = ccsdspy.VariableLength([
     ccsdspy.PacketField(name='SYNCSCI0PKT', bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name='CRCSCI0PKT', bit_length=16, data_type='uint'),
 ])
+event_wf_transmit_with_md.name = 'event_wf_transmit_with_md'
