@@ -324,6 +324,9 @@ event_wf_transmit = ccsdspy.VariableLength([
 ])
 event_wf_transmit.name = 'event_wf_transmit'
 
+event_wf_fetch = event_wf_transmit
+event_wf_fetch.name = 'event_wf_fetch'
+
 event_wf_transmit_with_md = ccsdspy.VariableLength([
     ccsdspy.PacketField(name='SHCOARSE', bit_length=32, data_type='uint'),
     ccsdspy.PacketField(name='SHFINE', bit_length=16, data_type='uint'),
