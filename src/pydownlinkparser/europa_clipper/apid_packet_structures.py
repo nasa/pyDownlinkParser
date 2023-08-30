@@ -124,8 +124,3 @@ apid_multi_pkt = {
         }
     )
 }
-
-# TODO we could also add a name attribute to all the VariableLength structures, by creating in the core package a
-#  NamedVariableLength object. the name would be a property of the object, we would not need to manage the
-#  dictionnary after we also need a fall off case where the object will be a VariableLength object with no name,
-#  we would then use the object name by introspection and add a sequence number to avoid collisions
