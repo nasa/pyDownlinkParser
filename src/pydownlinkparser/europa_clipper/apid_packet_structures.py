@@ -52,6 +52,7 @@ from .suda_config import postmortem_log_pkt
 from .suda_config import software_centric_pkt
 from .suda_config import catalog_list
 from .suda_config import event_wf_transmit
+from .suda_config import event_wf_fetch
 from .suda_config import event_wf_transmit_with_md
 from pydownlinkparser.util import default_pkt
 
@@ -80,6 +81,7 @@ apid_packets = {
     1418: event_message_pkt,
     1420: adc_register_pkt,
     1424: event_wf_transmit,
+    1426: event_wf_fetch,
     1432: catalog_list_pkt,
     1344: hs_mise,
     1345: adp_metadata_mise,

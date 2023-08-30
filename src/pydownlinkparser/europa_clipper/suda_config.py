@@ -7,6 +7,8 @@ Major_APID = 0x16
 
 
 class SudaCatalogListStructure(ccsdspy.VariableLength):
+    name = 'catalog_list'
+
     def __init__(self):
         super().__init__([ccsdspy.PacketField(name='SHCOARSE', bit_length=32, data_type='int'),
                           ccsdspy.PacketField(name='SHFINE', bit_length=16, data_type='int'),
@@ -49,7 +51,6 @@ class SudaCatalogListStructure(ccsdspy.VariableLength):
 
 
 catalog_list = SudaCatalogListStructure()
-catalog_list.name = 'catalog_list'
 
 hs_suda = ccsdspy.VariableLength([
     ccsdspy.PacketField(name="MSCLK Seconds", bit_length=32, data_type='uint'),
@@ -259,16 +260,6 @@ METADATA_FIELDS = [
     ccsdspy.PacketField(name='FPGAVER', bit_length=32, data_type='uint')
 ]
 
-# class SudaWaveformPacketStructure(ccsdspy.VariableLength):
-#     """
-#         Packet Structure for the event header and the wave form data.
-#
-#         Depending on the parsed sciotype the rest of the packet is formatted as an event header (metadata) or as a waveform.
-#
-#         Specification is taken from SUDA FSW Science Packets White Paper, Document No. 168606, rev A section 2.2
-#
-#     """
-
 fields_before_data = [
     ccsdspy.PacketField(name='SHCOARSE', bit_length=32, data_type='uint'),
     ccsdspy.PacketField(name='SHFINE', bit_length=16, data_type='uint'),
@@ -318,11 +309,14 @@ event_wf_transmit = ccsdspy.VariableLength([
     ccsdspy.PacketField(name='SCI0SPARE2', bit_length=32, data_type='uint'),
     ccsdspy.PacketField(name='SCI0SPARE3', bit_length=32, data_type='uint'),
     ccsdspy.PacketField(name='SCI0SPARE4', bit_length=32, data_type='uint'),
-    ccsdspy.PacketArray(name="unused", data_type="uint", bit_length=8, array_shape="expand"),
+    ccsdspy.PacketArray(name="data", data_type="uint", bit_length=8, array_shape="expand"),
     ccsdspy.PacketField(name='SYNCSCI0PKT', bit_length=16, data_type='uint'),
     ccsdspy.PacketField(name='CRCSCI0PKT', bit_length=16, data_type='uint'),
 ])
 event_wf_transmit.name = 'event_wf_transmit'
+
+event_wf_fetch = event_wf_transmit
+event_wf_fetch.name = 'event_wf_fetch'
 
 event_wf_transmit_with_md = ccsdspy.VariableLength([
     ccsdspy.PacketField(name='SHCOARSE', bit_length=32, data_type='uint'),
