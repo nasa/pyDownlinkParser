@@ -15,12 +15,11 @@ For example in command line:
     python3 -m venv venv
     source venv/bin/activate
 
+#### Install CCSDSPy
 
-#### Install the latest version of CCSDSPY.
-
-    git clone https://github.com/CCSDSPy/ccsdspy.git
-    cd ccsdspy
-    pip install .
+To install the latest version of CCSDSPy:
+    
+    pip install git+https://github.com/CCSDSPy/ccsdspy.git
 
 
 #### Deploy the project
@@ -32,16 +31,14 @@ Install the package
     pip install -e '.[dev]'
     pre-commit install && pre-commit install -t pre-push
 
-Run an example:
-
-    python src/pydownlinkparser/main.py
 
 Steps to run:
 1) Clone the repo
-2) In Runtime > Edit Config enter the Filename, Mode and Header Status (Like --file data/ecm_0406193095-0283151.DAT --mode BDSEM --header Y)
-3) Available Modes - BDSEM, RAW; Headers - Y/N
-4) For ECM, mode - BDSEM, header - Y, For Suda, mode - BDSEM, header - N, for MISE, mode - RAW, header - Y
+2) In Runtime > Edit Config enter the Filename, Mode and Header Status (Like --file data/ecm_0406193095-0283151.DAT --bdsem --header)
+4) For each mode, enter the filename using --file path_to_file, followed by --bdsem and --header depending on the mode
+5) For ECM --bdsem --header, for RAW --bdsem, for MISE --header
+6) Run the file downlink_to_excel.py to generate the Excel file with data for the respective file
 
-For example:
+Run an example:
 
-   python src/
+    python src/pydownlinkparser/downlink_to_excel.py
