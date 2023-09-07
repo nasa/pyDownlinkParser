@@ -3,7 +3,6 @@ import os.path
 import pandas as pd
 from pydownlinkparser.remove_non_ccsds_headers import strip_non_ccsds_headers
 from pydownlinkparser.parse_ccsds_downlink import parse_ccsds_file
-from pydownlinkparser.europa_clipper import apid_packet_structures
 
 
 def get_parser():
@@ -16,9 +15,7 @@ def get_parser():
 
 def export_dfs_to_xlsx(dfs, filename1):
     with pd.ExcelWriter(filename1) as writer:
-        for apid, df in dfs.items():
-            pkt_struct = apid_packet_structures.apid_packets[apid]
-            name = f'{apid} - ' + pkt_struct.name if hasattr(pkt_struct, "name") else f'{apid}' + pkt_struct.__name__
+        for name, df in dfs.items():
             df.to_excel(writer, sheet_name=name, index=True)
 
 

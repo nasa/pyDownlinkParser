@@ -315,7 +315,30 @@ event_wf_transmit = ccsdspy.VariableLength([
 ])
 event_wf_transmit.name = 'event_wf_transmit'
 
-event_wf_fetch = event_wf_transmit
+event_wf_fetch = ccsdspy.VariableLength([
+    ccsdspy.PacketField(name='SHCOARSE', bit_length=32, data_type='uint'),
+    ccsdspy.PacketField(name='SHFINE', bit_length=16, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0AID', bit_length=32, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0TYPE', bit_length=8, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0CONT', bit_length=8, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0SPARE1', bit_length=13, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0PACK', bit_length=1, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0FRAG', bit_length=1, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0COMP', bit_length=1, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0EVTNUM', bit_length=16, data_type='uint'),  # event number
+    ccsdspy.PacketField(name='SCI0CAT', bit_length=8, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0QUAL', bit_length=8, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0FRAGOFF', bit_length=16, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0VER', bit_length=16, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0TIMECOARSE', bit_length=16, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0TIMEFINE', bit_length=16, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0SPARE2', bit_length=32, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0SPARE3', bit_length=32, data_type='uint'),
+    ccsdspy.PacketField(name='SCI0SPARE4', bit_length=32, data_type='uint'),
+    ccsdspy.PacketArray(name="data", data_type="uint", bit_length=8, array_shape="expand"),
+    ccsdspy.PacketField(name='SYNCSCI0PKT', bit_length=16, data_type='uint'),
+    ccsdspy.PacketField(name='CRCSCI0PKT', bit_length=16, data_type='uint'),
+])
 event_wf_fetch.name = 'event_wf_fetch'
 
 event_wf_transmit_with_md = ccsdspy.VariableLength([

@@ -16,7 +16,8 @@ def get_sub_packet_keys(parsed_apids, sub_apid: dict):
             for decision_value in list(parsed_apids[decision_field])
         ]
     else:
-        return [decision_fun() for _ in range(0, len(parsed_apids))]
+        first_key = list(parsed_apids.keys())[0]
+        return [decision_fun() for _ in range(0, len(parsed_apids[first_key]))]
 
 
 def distritbute_packets(keyss, stream1):
@@ -32,18 +33,13 @@ def distritbute_packets(keyss, stream1):
 
 def parse_ccsds_file(ccsds_file: str):
     """ """
-    # with open(ccsds_file, "rb") as mixed_file:
     stream_by_apid = ccsdspy.utils.split_by_apid(ccsds_file)
-
     dfs = {}
     for apid, streams in stream_by_apid.items():
         # copy the input stream because the load function alters it
         stream1 = copy.deepcopy(streams)
         pkt = apid_packets.get(apid, default_pkt)
-        multi_parsed_df = pd.DataFrame
         parsed_apids = pkt.load(streams, include_primary_header=True)
-        df = pd.DataFrame.from_dict(parsed_apids)
-        df['APID'] = apid
         multi_parsed_apids = {}
         if apid in apid_multi_pkt:
             keys = get_sub_packet_keys(parsed_apids, apid_multi_pkt[apid])
@@ -52,11 +48,26 @@ def parse_ccsds_file(ccsds_file: str):
                 multi_parsed_apids[key] = minor_pkt.load(
                     buffer[key], include_primary_header=True
                 )
-            multi_parsed_df = pd.DataFrame.from_dict(multi_parsed_apids)
-            multi_parsed_df['APID'] = apid
-            combined_df = pd.concat([df, multi_parsed_df])
-            dfs[apid] = combined_df
+                name = get_tab_name(apid, minor_pkt, dfs.keys())
+                dfs[name] = pd.DataFrame.from_dict(
+                    multi_parsed_apids[key]
+                )
         else:
-            dfs[apid] = df
+            name = get_tab_name(apid, pkt, dfs.keys())
+            dfs[name] = pd.DataFrame.from_dict(
+                parsed_apids
+            )
 
     return dfs
+
+
+def get_tab_name(apid, pkt_def, existing_names):
+    if hasattr(pkt_def, 'name'):
+        name = f"{apid} {pkt_def.name}"
+    else:
+        name = f"{apid} {pkt_def.__class__.__name__}"
+    # we need that in case the name is used twice so that data is not overridden
+    n = 1
+    while name in existing_names:
+        name = f"{name} ({n})"
+    return name

@@ -55,6 +55,10 @@ from .suda_config import event_wf_transmit
 from .suda_config import event_wf_fetch
 from .suda_config import event_wf_transmit_with_md
 from pydownlinkparser.util import default_pkt
+from .mise_config import last_frame_packet
+from .mise_config import ancillary_data_pkt
+from .mise_config import mise_uncomp_frame_packet_structure_factory
+from .mise_config import standard_frame_pkt
 
 # for each supported APID, define a ccsdspy.VariableLength packet definition
 apid_packets = {
@@ -114,13 +118,37 @@ def is_metadata(decision_value):
     return decision_value == 0x1
 
 
+N = 0
+
+
+def sequence():
+    global N
+    N += 1
+    if N < 90:
+        return "90th"
+    if N == 90:
+        return "91st"
+    else:
+        N = 0
+        return "92nd"
+
+
 apid_multi_pkt = {
     1424: dict(
-        decision_field="SCI0TYPE",
+        decision_field='SCI0TYPE',
         decision_fun=is_metadata,
         pkts={
             True: event_wf_transmit,
             False: event_wf_transmit_with_md
+        }
+    ),
+
+    1392: dict(
+        decision_fun=sequence,
+        pkts={
+            "90th": standard_frame_pkt,
+            "91st": ancillary_data_pkt,
+            "92nd": last_frame_packet
         }
     )
 }
