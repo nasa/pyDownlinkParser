@@ -18,7 +18,7 @@ For example in command line:
 #### Install CCSDSPy
 
 To install the latest version of CCSDSPy:
-    
+
     pip install git+https://github.com/CCSDSPy/ccsdspy.git
 
 
@@ -42,4 +42,3 @@ or
 or
 
     parse-downlink --file ./data/ecm_mag_testcase6_cmds_split_out.log --bdsem --header
-

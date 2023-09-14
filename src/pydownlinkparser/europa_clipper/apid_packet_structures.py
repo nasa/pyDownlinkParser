@@ -1,8 +1,5 @@
-"""
-...
-"""
-import ccsdspy
-from ccsdspy.constants import BITS_PER_BYTE
+"""Definition of the Europa-Clipper CCSDS packets."""
+from pydownlinkparser.util import default_pkt
 
 from .ecm_config import adp_metadata_ecm
 from .ecm_config import fg1_high_pkt
@@ -13,7 +10,9 @@ from .ecm_config import fg3_high_pkt
 from .ecm_config import fg3_low_pkt
 from .ecm_config import hs_ecm
 from .ecm_config import read_reg_structure
+from .mise_config import adp_metadata_mise
 from .mise_config import alarm_pkt
+from .mise_config import ancillary_data_pkt
 from .mise_config import boot_status_pkt
 from .mise_config import ceu_reg_dump_pkt
 from .mise_config import command_echo_pkt
@@ -26,39 +25,34 @@ from .mise_config import fpie_reg_settings_pkt
 from .mise_config import fpmc_mem_chksum_pkt
 from .mise_config import fpmc_mem_dump_pkt
 from .mise_config import frame_support_pkt
+from .mise_config import hs_mise
+from .mise_config import last_frame_packet
 from .mise_config import macro_chksum_pkt
 from .mise_config import macro_dump_pkt
 from .mise_config import mem_chksum_pkt
-from .mise_config import mem_dump_pkt
-from .mise_config import adp_metadata_mise
-from .mise_config import hs_mise
 from .mise_config import mon_limits_pkt
 from .mise_config import param_pkts
+from .mise_config import standard_frame_pkt
 from .mise_config import status_pkt
 from .mise_config import text_pkt
 from .mise_config import uncomp_frame_pkt
 from .suda_config import adc_register_pkt
 from .suda_config import adp_metadata_suda
+from .suda_config import catalog_list
 from .suda_config import catalog_list_pkt
 from .suda_config import command_log_pkt
 from .suda_config import dwell_pkt
 from .suda_config import event_log_pkt
 from .suda_config import event_message_pkt
+from .suda_config import event_wf_fetch
+from .suda_config import event_wf_transmit
+from .suda_config import event_wf_transmit_with_md
 from .suda_config import flash_table_dump_pkt
 from .suda_config import hardware_centric_pkt
 from .suda_config import hs_suda
 from .suda_config import mem_dump_pkt
 from .suda_config import postmortem_log_pkt
 from .suda_config import software_centric_pkt
-from .suda_config import catalog_list
-from .suda_config import event_wf_transmit
-from .suda_config import event_wf_fetch
-from .suda_config import event_wf_transmit_with_md
-from pydownlinkparser.util import default_pkt
-from .mise_config import last_frame_packet
-from .mise_config import ancillary_data_pkt
-from .mise_config import mise_uncomp_frame_packet_structure_factory
-from .mise_config import standard_frame_pkt
 
 # for each supported APID, define a ccsdspy.VariableLength packet definition
 apid_packets = {
@@ -115,6 +109,7 @@ apid_packets = {
 
 
 def is_metadata(decision_value):
+    """Identify which packet APID 1424 is an event header (metadata)."""
     return decision_value == 0x1
 
 
@@ -122,6 +117,7 @@ N = 0
 
 
 def sequence():
+    """Simple counter to identify packets APID 1392."""
     global N
     N += 1
     if N < 90:
@@ -135,20 +131,16 @@ def sequence():
 
 apid_multi_pkt = {
     1424: dict(
-        decision_field='SCI0TYPE',
+        decision_field="SCI0TYPE",
         decision_fun=is_metadata,
-        pkts={
-            True: event_wf_transmit,
-            False: event_wf_transmit_with_md
-        }
+        pkts={True: event_wf_transmit, False: event_wf_transmit_with_md},
     ),
-
     1392: dict(
         decision_fun=sequence,
         pkts={
             "90th": standard_frame_pkt,
             "91st": ancillary_data_pkt,
-            "92nd": last_frame_packet
-        }
-    )
+            "92nd": last_frame_packet,
+        },
+    ),
 }
