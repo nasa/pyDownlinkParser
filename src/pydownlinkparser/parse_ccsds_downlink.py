@@ -4,6 +4,7 @@ import io
 
 import ccsdspy
 import pandas as pd
+import numpy as np
 from pydownlinkparser.europa_clipper.apid_packet_structures import apid_multi_pkt
 from pydownlinkparser.europa_clipper.apid_packet_structures import apid_packets
 from pydownlinkparser.util import default_pkt
@@ -47,19 +48,23 @@ def parse_ccsds_file(ccsds_file: str):
         stream1 = copy.deepcopy(streams)
         pkt = apid_packets.get(apid, default_pkt)
         parsed_apids = pkt.load(streams, include_primary_header=True)
-        multi_parsed_apids = {}
         if apid in apid_multi_pkt:
             keys = get_sub_packet_keys(parsed_apids, apid_multi_pkt[apid])
             buffer = distritbute_packets(keys, stream1)
             for key, minor_pkt in apid_multi_pkt[apid]["pkts"].items():
-                multi_parsed_apids[key] = minor_pkt.load(
-                    buffer[key], include_primary_header=True
+                parsed_sub_apid = minor_pkt.load(
+                    buffer[key]
                 )
                 name = get_tab_name(apid, minor_pkt, dfs.keys())
-                dfs[name] = pd.DataFrame.from_dict(multi_parsed_apids[key])
+                parsed_sub_apid = cast_to_list(parsed_sub_apid)
+                dfs[name] = pd.DataFrame.from_dict(
+                    parsed_sub_apid
+                )
         else:
             name = get_tab_name(apid, pkt, dfs.keys())
-            dfs[name] = pd.DataFrame.from_dict(parsed_apids)
+            dfs[name] = pd.DataFrame.from_dict(
+                parsed_apids
+            )
 
     return dfs
 
@@ -85,3 +90,14 @@ def get_tab_name(apid, pkt_def, existing_names):
     while name in existing_names:
         name = f"{name} ({n})"
     return name
+
+
+def cast_to_list(d):
+    """
+    Casts any multidimensional arrays to lists
+    """
+    for key, value in d.items():
+        if len(np.shape(value)) > 1:
+            value = [v.tolist() for v in value]
+            d[key] = value
+    return d
