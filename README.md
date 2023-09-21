@@ -1,5 +1,8 @@
 # pyDownLinkParser
+
 This library parses binary files containing CCSDS packets of various structures (APID) and distribute them in pandas dataframes.
+
+It is modular and configurable for multiple missions.
 
 
 ## Developers
