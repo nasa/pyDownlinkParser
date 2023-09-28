@@ -1,13 +1,16 @@
 """CCSDS parser for binary file with multiple APIDs."""
 import copy
 import io
+import logging
 
 import ccsdspy
-import pandas as pd
 import numpy as np
+import pandas as pd
 from pydownlinkparser.europa_clipper.apid_packet_structures import apid_multi_pkt
 from pydownlinkparser.europa_clipper.apid_packet_structures import apid_packets
 from pydownlinkparser.util import default_pkt
+
+logger = logging.getLogger(__name__)
 
 
 def get_sub_packet_keys(parsed_apids, sub_apid: dict):
@@ -24,7 +27,7 @@ def get_sub_packet_keys(parsed_apids, sub_apid: dict):
         return [decision_fun() for _ in range(0, len(parsed_apids[first_key]))]
 
 
-def distritbute_packets(keyss, stream1):
+def distribute_packets(keyss, stream1):
     """Distribute binary stream into multiple binary stream with consistent sub-packet structures.
 
     Used when single APID does not have consistent packet structure.
@@ -44,26 +47,27 @@ def parse_ccsds_file(ccsds_file: str):
     stream_by_apid = ccsdspy.utils.split_by_apid(ccsds_file)
     dfs = {}
     for apid, streams in stream_by_apid.items():
-        # copy the input stream because the load function alters it
-        stream1 = copy.deepcopy(streams)
-        pkt = apid_packets.get(apid, default_pkt)
-        parsed_apids = pkt.load(streams, include_primary_header=True)
-        if apid in apid_multi_pkt:
-            keys = get_sub_packet_keys(parsed_apids, apid_multi_pkt[apid])
-            buffer = distritbute_packets(keys, stream1)
-            for key, minor_pkt in apid_multi_pkt[apid]["pkts"].items():
-                parsed_sub_apid = minor_pkt.load(
-                    buffer[key]
-                )
-                name = get_tab_name(apid, minor_pkt, dfs.keys())
-                parsed_sub_apid = cast_to_list(parsed_sub_apid)
-                dfs[name] = pd.DataFrame.from_dict(
-                    parsed_sub_apid
-                )
-        else:
-            name = get_tab_name(apid, pkt, dfs.keys())
-            dfs[name] = pd.DataFrame.from_dict(
-                parsed_apids
+        logger.info("Parse APID %s", apid)
+        try:
+            # copy the input stream because the load function alters it
+            stream1 = copy.deepcopy(streams)
+            pkt = apid_packets.get(apid, default_pkt)
+            parsed_apids = pkt.load(streams, include_primary_header=True)
+            if apid in apid_multi_pkt:
+                keys = get_sub_packet_keys(parsed_apids, apid_multi_pkt[apid])
+                buffer = distribute_packets(keys, stream1)
+                for key, minor_pkt in apid_multi_pkt[apid]["pkts"].items():
+                    parsed_sub_apid = minor_pkt.load(buffer[key])
+                    name = get_tab_name(apid, minor_pkt, dfs.keys())
+                    parsed_sub_apid = cast_to_list(parsed_sub_apid)
+                    dfs[name] = pd.DataFrame.from_dict(parsed_sub_apid)
+            else:
+                name = get_tab_name(apid, pkt, dfs.keys())
+                dfs[name] = pd.DataFrame.from_dict(parsed_apids)
+        except AssertionError:
+            logger.warning(
+                "APID %i was not parseable because packet length inconsistent with CCSDS header description",
+                apid,
             )
 
     return dfs
@@ -93,9 +97,7 @@ def get_tab_name(apid, pkt_def, existing_names):
 
 
 def cast_to_list(d):
-    """
-    Casts any multidimensional arrays to lists
-    """
+    """Casts any multidimensional arrays to lists."""
     for key, value in d.items():
         if len(np.shape(value)) > 1:
             value = [v.tolist() for v in value]
