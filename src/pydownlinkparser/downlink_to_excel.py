@@ -18,6 +18,7 @@ def get_parser():
         "if not present, RAW mode is assumed, "
         "with other specific non CCSDS markers in betwwen packets",
     )
+
     parser.add_argument(
         "--header",
         action="store_true",
