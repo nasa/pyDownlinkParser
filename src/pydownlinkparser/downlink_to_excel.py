@@ -33,11 +33,27 @@ def get_parser():
     return parser
 
 
+def add_tab_to_xlsx(dfs, writer, name=""):
+    """Add tab to excel writer from a dictionary, recursively.
+
+    Only use the name in the leaf of the dictionary tree.
+
+    @param dfs: dictionary (of dictionary) of pandas dataframes or single pandas dataframe
+    @param writer: pandas.ExcelWriter
+    @param name: name of the tab to be used, optional when
+    @return: Nothing
+    """
+    if isinstance(dfs, dict):
+        for name, df in dfs.items():
+            add_tab_to_xlsx(df, writer, name=name)
+    else:
+        dfs.to_excel(writer, sheet_name=name, index=True)
+
+
 def export_dfs_to_xlsx(dfs, filename1):
     """Export a dictionnary of pandas dataframes to an Excel file."""
     with pd.ExcelWriter(filename1) as writer:
-        for name, df in dfs.items():
-            df.to_excel(writer, sheet_name=name, index=True)
+        add_tab_to_xlsx(dfs, writer)
 
 
 def export_ccsds_to_excel(ccsds_file, output_filename):

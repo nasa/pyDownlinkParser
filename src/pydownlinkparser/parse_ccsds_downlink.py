@@ -54,13 +54,14 @@ def parse_ccsds_file(ccsds_file: str):
             pkt = apid_packets.get(apid, default_pkt)
             parsed_apids = pkt.load(streams, include_primary_header=True)
             if apid in apid_multi_pkt:
+                dfs[apid] = {}
                 keys = get_sub_packet_keys(parsed_apids, apid_multi_pkt[apid])
                 buffer = distribute_packets(keys, stream1)
                 for key, minor_pkt in apid_multi_pkt[apid]["pkts"].items():
                     parsed_sub_apid = minor_pkt.load(buffer[key])
                     name = get_tab_name(apid, minor_pkt, dfs.keys())
                     parsed_sub_apid = cast_to_list(parsed_sub_apid)
-                    dfs[name] = pd.DataFrame.from_dict(parsed_sub_apid)
+                    dfs[apid][name] = pd.DataFrame.from_dict(parsed_sub_apid)
             else:
                 name = get_tab_name(apid, pkt, dfs.keys())
                 try:
