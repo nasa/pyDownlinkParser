@@ -20,9 +20,15 @@ def get_parser():
     )
 
     parser.add_argument(
-        "--header",
+        "--pkt-header",
         action="store_true",
         help="When additional non CCSDS header are added between packets",
+    )
+
+    parser.add_argument(
+        "--json-header",
+        action="store_true",
+        help="When a JSON ASCII header starts the file",
     )
     return parser
 
@@ -45,11 +51,15 @@ def main():
     parser = get_parser()
     args = parser.parse_args()
 
-    ccsds_file = strip_non_ccsds_headers(args.file, args.bdsem, args.header)
+    with open(args.file, "rb") as f:
 
-    file_base, _ = os.path.splitext(args.file)
-    xlsx_filename = file_base + ".xlsx"
-    export_ccsds_to_excel(ccsds_file, xlsx_filename)
+        ccsds_file = strip_non_ccsds_headers(
+            f, args.bdsem, args.pkt_header, args.json_header
+        )
+
+        file_base, _ = os.path.splitext(args.file)
+        xlsx_filename = file_base + ".xlsx"
+        export_ccsds_to_excel(ccsds_file, xlsx_filename)
 
 
 if __name__ == "__main__":

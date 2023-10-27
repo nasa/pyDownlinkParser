@@ -1,4 +1,7 @@
+from copy import copy
+
 import ccsdspy
+from ccsdspy.converters import Converter
 from ccsdspy.converters import StringifyBytesConverter
 
 from .common_config import hs_header
@@ -31,7 +34,7 @@ read_reg_structure = ccsdspy.VariableLength(
 read_reg_structure.add_converted_field(
     "REG", "REG_HEX", StringifyBytesConverter(format="hex")
 )
-read_reg_structure.name = 'read_reg_structure'
+read_reg_structure.name = "read_reg_structure"
 
 hs_fields = [
     ccsdspy.PacketField(
@@ -75,82 +78,78 @@ hs_fields = [
 ]
 
 hs_ecm = ccsdspy.VariableLength(hs_header + hs_fields)
-hs_ecm.name = 'hs_ecm'
+hs_ecm.name = "hs_ecm"
+
+fgx_pkt = ccsdspy.VariableLength(
+    [
+        ccsdspy.PacketField(
+            name="Instrument SCLK Time second", bit_length=32, data_type="uint"
+        ),
+        ccsdspy.PacketField(
+            name="Instrument SCLK Time subsec", bit_length=16, data_type="uint"
+        ),
+        ccsdspy.PacketField(name="Accountability ID", bit_length=32, data_type="uint"),
+        # shape is 3 channels * number of samples
+        ccsdspy.PacketArray(
+            name="FGX_CHANNELS", data_type="uint", bit_length=8, array_shape="expand"
+        ),
+        ccsdspy.PacketField(name="FGx_-4.7VHK", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_+4.7VHK", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_2VREF", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_1VREF", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_DRV_SNS", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_OP_PRTA", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_FBX", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_FBY", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_FBZ", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_BPFX", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_BPFY", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_BPFZ", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_+4.7_I", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_-4.7_I", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_HK_CH14", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="FGx_HK_CH15", bit_length=24, data_type="int"),
+        ccsdspy.PacketField(name="Register 80", bit_length=16, data_type="uint"),
+        ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type="uint"),
+    ]
+)
 
 
-class FGXPacketStructure(ccsdspy.VariableLength):
-    def __init__(self, time_sample_per_packet: int):
-        super().__init__(
-            [
-                ccsdspy.PacketField(
-                    name="Instrument SCLK Time second", bit_length=32, data_type="uint"
-                ),
-                ccsdspy.PacketField(
-                    name="Instrument SCLK Time subsec", bit_length=16, data_type="uint"
-                ),
-                ccsdspy.PacketField(
-                    name="Accountability ID", bit_length=32, data_type="uint"
-                ),
-            ]
-        )
+class FGChannelsPacking(Converter):
+    def __init__(self):
+        pass
 
-        self._add_channel_samples(time_sample_per_packet)
-        self._add_support_fields()
+    def convert(self, field_array):
+        """
 
-    def _add_channel_samples(self, time_sample_per_packet: int):
-        for i in range(time_sample_per_packet):
-            for c in range(3, 0, -1):
-                self._fields.append(
-                    ccsdspy.PacketField(
-                        f"FGx_CH{c}_{i}", bit_length=24, data_type="int"
-                    )
-                )
+        @param field_array: array of arrays of bytes read from the measurement section of the pkt
+        @return: arrays of arraus of 24bits values measured in this order:
+            measurement 0, channel 3, channel 2, channel 1
+            measurement 1, channel 3, channel 2, channel 1
+            ...
+        """
+        pkt_channels = []
+        for vector in field_array:
+            channels = []
+            for i in range(0, len(vector), 3):
+                packed_value = bytearray(vector[i : i + 3])
+                packed_value_int = int.from_bytes(packed_value, "big", signed="True")
+                channels.append(packed_value_int)
+            pkt_channels.append(channels)
 
-    def _add_support_fields(self):
-        self._fields.extend(
-            [
-                ccsdspy.PacketField(name="FGx_-4.7VHK", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_+4.7VHK", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_2VREF", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_1VREF", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_DRV_SNS", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_OP_PRTA", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_FBX", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_FBY", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_FBZ", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_BPFX", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_BPFY", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_BPFZ", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_+4.7_I", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_-4.7_I", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_HK_CH14", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(name="FGx_HK_CH15", bit_length=24, data_type="int"),
-                ccsdspy.PacketField(
-                    name="Register 80", bit_length=16, data_type="uint"
-                ),
-                ccsdspy.PacketField(
-                    name="PEC (CRC-16-CCITT)", bit_length=16, data_type="uint"
-                ),
-            ]
-        )
+        return pkt_channels
 
 
-TIME_SAMPLE_PER_HF_PACKET = 160
-TIME_SAMPLE_PER_LF_PACKET = 60
+fgx_pkt.add_converted_field(
+    "FGX_CHANNELS", "FGX_CHANNELS_UNPACKED", FGChannelsPacking()
+)
 
-fg1_low_pkt = FGXPacketStructure(TIME_SAMPLE_PER_LF_PACKET)
-fg1_high_pkt = FGXPacketStructure(TIME_SAMPLE_PER_HF_PACKET)
-fg2_low_pkt = FGXPacketStructure(TIME_SAMPLE_PER_LF_PACKET)
-fg2_high_pkt = FGXPacketStructure(TIME_SAMPLE_PER_HF_PACKET)
-fg3_low_pkt = FGXPacketStructure(TIME_SAMPLE_PER_LF_PACKET)
-fg3_high_pkt = FGXPacketStructure(TIME_SAMPLE_PER_HF_PACKET)
 
-fg1_low_pkt.name = 'fg1_low_pkt'
-fg1_high_pkt.name = 'fg1_high_pkt'
-fg2_low_pkt.name = 'fg2_low_pkt'
-fg2_high_pkt.name = 'fg2_high_pkt'
-fg3_low_pkt.name = 'fg3_low_pkt'
-fg3_high_pkt.name = 'fg3_high_pkt'
+def fg_pkt(sensor: int, frequency: str):
+    pkt = copy(fgx_pkt)
+    pkt.name = f"fg{sensor}_{frequency}"
+    return pkt
+
 
 adp_metadata_ecm = ccsdspy.VariableLength(
     [
@@ -176,4 +175,4 @@ adp_metadata_ecm = ccsdspy.VariableLength(
         ccsdspy.PacketField(name="PEC (CRC-16-CCITT)", bit_length=16, data_type="uint"),
     ]
 )
-adp_metadata_ecm.name = 'adp_metadata_ecm'
+adp_metadata_ecm.name = "adp_metadata_ecm"

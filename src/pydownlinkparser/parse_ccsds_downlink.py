@@ -63,7 +63,10 @@ def parse_ccsds_file(ccsds_file: str):
                     dfs[name] = pd.DataFrame.from_dict(parsed_sub_apid)
             else:
                 name = get_tab_name(apid, pkt, dfs.keys())
-                dfs[name] = pd.DataFrame.from_dict(parsed_apids)
+                try:
+                    dfs[name] = pd.DataFrame.from_dict(parsed_apids)
+                except ValueError as e:
+                    print(str(e))
         except AssertionError:
             logger.warning(
                 "APID %i was not parseable because packet length inconsistent with CCSDS header description",
@@ -86,9 +89,9 @@ def get_tab_name(apid, pkt_def, existing_names):
     @return: a unique tab name for the current APID and packet structure definition.
     """
     if hasattr(pkt_def, "name"):
-        name = f"{apid} {pkt_def.name}"
+        name = f"{apid}.{pkt_def.name}"
     else:
-        name = f"{apid} {pkt_def.__class__.__name__}"
+        name = f"{apid}.{pkt_def.__class__.__name__}"
     # we need that in case the name is used twice so that data is not overridden
     n = 1
     while name in existing_names:

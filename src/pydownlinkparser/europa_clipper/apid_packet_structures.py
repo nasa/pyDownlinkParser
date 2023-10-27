@@ -2,12 +2,7 @@
 from pydownlinkparser.util import default_pkt
 
 from .ecm_config import adp_metadata_ecm
-from .ecm_config import fg1_high_pkt
-from .ecm_config import fg1_low_pkt
-from .ecm_config import fg2_high_pkt
-from .ecm_config import fg2_low_pkt
-from .ecm_config import fg3_high_pkt
-from .ecm_config import fg3_low_pkt
+from .ecm_config import fg_pkt
 from .ecm_config import hs_ecm
 from .ecm_config import read_reg_structure
 from .mise_config import adp_metadata_mise
@@ -59,12 +54,12 @@ apid_packets = {
     1419: catalog_list,
     1232: read_reg_structure,
     1216: hs_ecm,
-    1218: fg1_low_pkt,
-    1219: fg1_high_pkt,
-    1222: fg2_low_pkt,
-    1223: fg2_high_pkt,
-    1226: fg3_low_pkt,
-    1227: fg3_high_pkt,
+    1218: fg_pkt(1, "low"),
+    1219: fg_pkt(1, "high"),
+    1222: fg_pkt(2, "low"),
+    1223: fg_pkt(2, "high"),
+    1226: fg_pkt(3, "low"),
+    1227: fg_pkt(3, "low"),
     1217: adp_metadata_ecm,
     1408: hs_suda,
     1409: adp_metadata_suda,
