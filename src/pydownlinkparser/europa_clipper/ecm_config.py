@@ -1,4 +1,5 @@
-from copy import copy
+"""ECM packet structures."""
+import copy
 
 import ccsdspy
 from ccsdspy.converters import Converter
@@ -89,9 +90,13 @@ fgx_pkt = ccsdspy.VariableLength(
             name="Instrument SCLK Time subsec", bit_length=16, data_type="uint"
         ),
         ccsdspy.PacketField(name="Accountability ID", bit_length=32, data_type="uint"),
-        # shape is 3 channels * number of samples
+        # shape is 3 bytes * 3 channels * number of samples
+        # 255, 237, 147]
         ccsdspy.PacketArray(
-            name="FGX_CHANNELS", data_type="uint", bit_length=8, array_shape="expand"
+            name="FGX_CHANNELS_8bits",
+            data_type="uint",
+            bit_length=8,
+            array_shape="expand",
         ),
         ccsdspy.PacketField(name="FGx_-4.7VHK", bit_length=24, data_type="int"),
         ccsdspy.PacketField(name="FGx_+4.7VHK", bit_length=24, data_type="int"),
@@ -115,39 +120,33 @@ fgx_pkt = ccsdspy.VariableLength(
 )
 
 
-class FGChannelsPacking(Converter):
+class BytesTo24BitInts(Converter):
+    """Convert from array of bytes to arrays of 24bits (3 bytes) integer."""
+
     def __init__(self):
+        """Does nothing."""
         pass
 
     def convert(self, field_array):
-        """
-
-        @param field_array: array of arrays of bytes read from the measurement section of the pkt
-        @return: arrays of arraus of 24bits values measured in this order:
-            measurement 0, channel 3, channel 2, channel 1
-            measurement 1, channel 3, channel 2, channel 1
-            ...
-        """
-        pkt_channels = []
-        for vector in field_array:
-            channels = []
-            for i in range(0, len(vector), 3):
-                packed_value = bytearray(vector[i : i + 3])
-                packed_value_int = int.from_bytes(packed_value, "big", signed="True")
-                channels.append(packed_value_int)
-            pkt_channels.append(channels)
-
-        return pkt_channels
+        """Convert list of arrays of bytes to list of arrays of int, each from 3 bytes."""
+        fgx_channels_24bits_list = []
+        for fgx_channels in field_array:
+            fgx_channels_24bits = []
+            for i in range(0, len(fgx_channels), 3):
+                meas_3bytes = bytes(fgx_channels[i : i + 3])
+                meas_int = int.from_bytes(meas_3bytes, "big", signed=True)
+                fgx_channels_24bits.append(meas_int)
+            fgx_channels_24bits_list.append(fgx_channels_24bits)
+        return fgx_channels_24bits_list
 
 
-fgx_pkt.add_converted_field(
-    "FGX_CHANNELS", "FGX_CHANNELS_UNPACKED", FGChannelsPacking()
-)
-
-
-def fg_pkt(sensor: int, frequency: str):
-    pkt = copy(fgx_pkt)
+def get_fgx_freq_pkt(sensor, frequency):
+    """Prepare a properly named packet structure for ECM FG packets."""
+    pkt = copy.copy(fgx_pkt)
     pkt.name = f"fg{sensor}_{frequency}"
+    pkt.add_converted_field(
+        "FGX_CHANNELS_8bits", "FGX_CHANNELS_24bits", BytesTo24BitInts()
+    )
     return pkt
 
 

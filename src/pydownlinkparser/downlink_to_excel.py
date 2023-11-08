@@ -73,6 +73,10 @@ def main():
             f, args.bdsem, args.pkt_header, args.json_header
         )
 
+        # to write the content of the file without non CCSDS code
+        # with open("ecm_test.bin", "wb") as f:
+        #    f.write(ccsds_file.read())
+
         file_base, _ = os.path.splitext(args.file)
         xlsx_filename = file_base + ".xlsx"
         export_ccsds_to_excel(ccsds_file, xlsx_filename)

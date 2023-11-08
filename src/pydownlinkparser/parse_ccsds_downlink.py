@@ -65,6 +65,7 @@ def parse_ccsds_file(ccsds_file: str):
             else:
                 name = get_tab_name(apid, pkt, dfs.keys())
                 try:
+                    parsed_apids = cast_to_list(parsed_apids)
                     dfs[name] = pd.DataFrame.from_dict(parsed_apids)
                 except ValueError as e:
                     print(str(e))
@@ -103,7 +104,7 @@ def get_tab_name(apid, pkt_def, existing_names):
 def cast_to_list(d):
     """Casts any multidimensional arrays to lists."""
     for key, value in d.items():
-        if len(np.shape(value)) > 1:
+        if len(np.shape(value)) > 1 and hasattr(value[0].__class__, "tolist"):
             value = [v.tolist() for v in value]
             d[key] = value
     return d
