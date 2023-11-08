@@ -1,3 +1,4 @@
+"""Remove non CCSDS binary code from input streams."""
 import io
 
 import bitstring
@@ -30,6 +31,7 @@ def remove_bdsem_and_message_headers(f):
 
 
 def remove_bdsem(f):
+    """Remove BDSEM headers."""
     buffer = bytes()
 
     bit_stream = bitstring.ConstBitStream(f)
@@ -44,6 +46,7 @@ def remove_bdsem(f):
 
 
 def remove_mise_and_headers(f):
+    """Remove packet markers from Raw mode file."""
     header_size = 4
     ccsds_header_size = 6
     byte_size = 8
@@ -69,6 +72,7 @@ def remove_mise_and_headers(f):
 
 
 def start_sequence(seq):
+    """Returns True if seq is on the beginning of a marker between CCSDS packets."""
     return seq[1] == 0xF0 and seq[0] == seq[2] == seq[3] != 0x00
 
 
