@@ -50,6 +50,7 @@ from .suda_config import postmortem_log_pkt
 from .suda_config import software_centric_pkt
 
 # for each supported APID, define a ccsdspy.VariableLength packet definition
+apid_packets = {}
 apid_packets = {
     1419: catalog_list,
     1232: read_reg_structure,
