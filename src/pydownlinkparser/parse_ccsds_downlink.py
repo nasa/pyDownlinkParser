@@ -58,6 +58,15 @@ def parse_ccsds_file(ccsds_file: str):
                 keys = get_sub_packet_keys(parsed_apids, apid_multi_pkt[apid])
                 buffer = distribute_packets(keys, stream1)
                 for key, minor_pkt in apid_multi_pkt[apid]["pkts"].items():
+                    logger.info(
+                        "Parse sub-APID %s %s",
+                        apid_multi_pkt[apid]["decision_fun"],
+                        key,
+                    )
+                    if hasattr(minor_pkt, "set_alt_inputs"):
+                        minor_pkt.set_alt_inputs(
+                            dfs[apid]
+                        )  # add reference to previously parsed pkt in the same group
                     parsed_sub_apid = minor_pkt.load(buffer[key])
                     name = get_tab_name(apid, minor_pkt, dfs.keys())
                     parsed_sub_apid = cast_to_list(parsed_sub_apid)

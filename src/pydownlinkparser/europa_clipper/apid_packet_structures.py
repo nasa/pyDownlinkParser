@@ -31,23 +31,11 @@ from .mise_config import standard_frame_pkt
 from .mise_config import status_pkt
 from .mise_config import text_pkt
 from .mise_config import uncomp_frame_pkt
-from .suda_config import adc_register_pkt
-from .suda_config import adp_metadata_suda
-from .suda_config import catalog_list
-from .suda_config import catalog_list_pkt
-from .suda_config import command_log_pkt
-from .suda_config import dwell_pkt
-from .suda_config import event_log_pkt
-from .suda_config import event_message_pkt
-from .suda_config import event_wf_fetch
-from .suda_config import event_wf_transmit
-from .suda_config import event_wf_transmit_with_md
-from .suda_config import flash_table_dump_pkt
-from .suda_config import hardware_centric_pkt
-from .suda_config import hs_suda
-from .suda_config import mem_dump_pkt
-from .suda_config import postmortem_log_pkt
-from .suda_config import software_centric_pkt
+from .suda import catalog_list
+from .suda import event_wf_fetch
+from .suda import event_wf_transmit
+from .suda import event_wf_transmit_data
+from .suda import event_wf_transmit_metadata
 
 # for each supported APID, define a ccsdspy.VariableLength packet definition
 apid_packets = {}
@@ -62,21 +50,8 @@ apid_packets = {
     1226: get_fgx_freq_pkt(3, "low"),
     1227: get_fgx_freq_pkt(3, "high"),
     1217: adp_metadata_ecm,
-    1408: hs_suda,
-    1409: adp_metadata_suda,
-    1410: event_log_pkt,
-    1411: postmortem_log_pkt,
-    1412: command_log_pkt,
-    1413: hardware_centric_pkt,
-    1414: software_centric_pkt,
-    1415: mem_dump_pkt,
-    1416: flash_table_dump_pkt,
-    1417: dwell_pkt,
-    1418: event_message_pkt,
-    1420: adc_register_pkt,
     1424: event_wf_transmit,
     1426: event_wf_fetch,
-    1432: catalog_list_pkt,
     1344: hs_mise,
     1345: adp_metadata_mise,
     1346: command_echo_pkt,
@@ -129,7 +104,7 @@ apid_multi_pkt = {
     1424: dict(
         decision_field="SCI0TYPE",
         decision_fun=is_metadata,
-        pkts={True: event_wf_transmit, False: event_wf_transmit_with_md},
+        pkts={True: event_wf_transmit_metadata, False: event_wf_transmit_data},
     ),
     1392: dict(
         decision_fun=sequence,
