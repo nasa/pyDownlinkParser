@@ -1,6 +1,6 @@
+"""Packet structure for the SuDa events."""
 from copy import copy
 from enum import Enum
-from enum import IntEnum
 
 import ccsdspy
 
@@ -8,17 +8,6 @@ from .event_wf_metadata import METADATA_FIELDS
 from .rice_decompressor_converter import RICEDecompressor
 
 wf_subpacket_types = Enum("wf_subpacket_types", ["DATA", "METADATA"])
-
-
-class SCIOType(IntEnum):
-    EVT_HDR = 0x01
-    TOF_HG = 0x02
-    TOF_LG = 0x04
-    TOF_MG = 0x08
-    CSA_QV = 0x10
-    CSA_QT = 0x20
-    CSA_QI = 0x40
-
 
 CONVERTER_INPUT_FIELDS = ("SCI0TYPE", "SCI0FRAG", "data")
 CONVERTER_OUTPUT_FIELD = "decompressed_data"
@@ -76,13 +65,6 @@ class SudaEventWFPacketStructure(ccsdspy.VariableLength):
             self.add_converted_field(
                 CONVERTER_INPUT_FIELDS, CONVERTER_OUTPUT_FIELD, RICEDecompressor()
             )
-
-    @classmethod
-    def get_sample_count(cls, sciotype: SCIOType):
-        if sciotype in {SCIOType.TOF_HG, SCIOType.TOF_LG, SCIOType.TOF_MG}:
-            return 512 * (cls.hs_pre + 1 + cls.hs_post + 1)
-        elif sciotype in {SCIOType.CSA_QV, SCIOType.CSA_QT, SCIOType.CSA_QI}:
-            return 8 * (cls.ls_pre + 1 + cls.ls_post + 1)
 
     def set_alt_inputs(self, df_dict: dict):
         if "1424.event_wf_transmit_metadata" in df_dict:

@@ -4,7 +4,6 @@ import io
 import logging
 
 import ccsdspy
-import numpy as np
 import pandas as pd
 from pydownlinkparser.europa_clipper.apid_packet_structures import apid_multi_pkt
 from pydownlinkparser.europa_clipper.apid_packet_structures import apid_packets
@@ -113,7 +112,8 @@ def get_tab_name(apid, pkt_def, existing_names):
 def cast_to_list(d):
     """Casts any multidimensional arrays to lists."""
     for key, value in d.items():
-        if len(np.shape(value)) > 1 and hasattr(value[0].__class__, "tolist"):
+        if hasattr(value[0].__class__, "tolist"):
             value = [v.tolist() for v in value]
             d[key] = value
+
     return d
