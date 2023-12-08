@@ -1,10 +1,15 @@
 """Definition of the Europa-Clipper CCSDS packets."""
 from pydownlinkparser.util import default_pkt
 
-from .ecm_config import adp_metadata_ecm
-from .ecm_config import get_fgx_freq_pkt
-from .ecm_config import hs_ecm
-from .ecm_config import read_reg_structure
+from .ecm import fg1_high
+from .ecm import fg1_low
+from .ecm import fg2_high
+from .ecm import fg2_low
+from .ecm import fg3_high
+from .ecm import fg3_low
+from .ecm import hs_ecm
+from .ecm import metadata_ecm
+from .ecm import read_reg_structure
 from .mise_config import adp_metadata_mise
 from .mise_config import alarm_pkt
 from .mise_config import ancillary_data_pkt
@@ -31,6 +36,7 @@ from .mise_config import standard_frame_pkt
 from .mise_config import status_pkt
 from .mise_config import text_pkt
 from .mise_config import uncomp_frame_pkt
+from .suda import catalog
 from .suda import catalog_list
 from .suda import event_wf_fetch
 from .suda import event_wf_transmit
@@ -38,20 +44,22 @@ from .suda import event_wf_transmit_data
 from .suda import event_wf_transmit_metadata
 
 # for each supported APID, define a ccsdspy.VariableLength packet definition
-apid_packets = {}
 apid_packets = {
-    1419: catalog_list,
+    # ECM
     1232: read_reg_structure,
     1216: hs_ecm,
-    1218: get_fgx_freq_pkt(1, "low"),
-    1219: get_fgx_freq_pkt(1, "high"),
-    1222: get_fgx_freq_pkt(2, "low"),
-    1223: get_fgx_freq_pkt(2, "high"),
-    1226: get_fgx_freq_pkt(3, "low"),
-    1227: get_fgx_freq_pkt(3, "high"),
-    1217: adp_metadata_ecm,
+    1218: fg1_low,
+    1219: fg1_high,
+    1222: fg2_low,
+    1223: fg2_high,
+    1226: fg3_low,
+    1227: fg3_high,
+    1217: metadata_ecm,
+    # SUDA
+    1419: catalog_list,
     1424: event_wf_transmit,
-    1426: event_wf_fetch,
+    1426: catalog,
+    # MISE
     1344: hs_mise,
     1345: adp_metadata_mise,
     1346: command_echo_pkt,

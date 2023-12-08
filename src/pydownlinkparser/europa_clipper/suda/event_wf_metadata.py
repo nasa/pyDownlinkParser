@@ -14,17 +14,16 @@ ChanPrefix = Enum(
 
 
 def _metadata_timestamp():
-    timestamp_fields = []
-    for i in range(1, 3):
-        timestamp_n_fields = [
-            ccsdspy.PacketField(name=f"TIMESTAMP{i}", bit_length=16, data_type="uint"),
-            ccsdspy.PacketField(
-                name=f"TIMESTAMP{i}_PAD", bit_length=16, data_type="uint"
-            ),
-        ]
-        timestamp_fields.extend(timestamp_n_fields)
-
-    return timestamp_fields
+    return [
+        ccsdspy.PacketField(name=f"TIMESTAMP1", bit_length=16, data_type="uint"),
+        ccsdspy.PacketField(name=f"TIMESTAMP1_PAD", bit_length=16, data_type="uint"),
+        ccsdspy.PacketField(
+            name=f"TIMESTAMP2_SUBSECONDS", bit_length=16, data_type="uint"
+        ),
+        ccsdspy.PacketField(
+            name=f"TIMESTAMP2_SECONDS", bit_length=16, data_type="uint"
+        ),
+    ]
 
 
 def EVENTNUMBER_structure():

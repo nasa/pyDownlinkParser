@@ -52,8 +52,9 @@ def parse_ccsds_file(ccsds_file: str):
             stream1 = copy.deepcopy(streams)
             pkt = apid_packets.get(apid, default_pkt)
             parsed_apids = pkt.load(streams, include_primary_header=True)
+            name = get_tab_name(apid, pkt, dfs.keys())
             if apid in apid_multi_pkt:
-                dfs[apid] = {}
+                dfs[name] = {}
                 keys = get_sub_packet_keys(parsed_apids, apid_multi_pkt[apid])
                 buffer = distribute_packets(keys, stream1)
                 for key, minor_pkt in apid_multi_pkt[apid]["pkts"].items():
@@ -64,14 +65,13 @@ def parse_ccsds_file(ccsds_file: str):
                     )
                     if hasattr(minor_pkt, "set_alt_inputs"):
                         minor_pkt.set_alt_inputs(
-                            dfs[apid]
+                            dfs[name]
                         )  # add reference to previously parsed pkt in the same group
                     parsed_sub_apid = minor_pkt.load(buffer[key])
-                    name = get_tab_name(apid, minor_pkt, dfs.keys())
+                    inner_name = get_tab_name(apid, minor_pkt, dfs.keys())
                     parsed_sub_apid = cast_to_list(parsed_sub_apid)
-                    dfs[apid][name] = pd.DataFrame.from_dict(parsed_sub_apid)
+                    dfs[name][inner_name] = pd.DataFrame.from_dict(parsed_sub_apid)
             else:
-                name = get_tab_name(apid, pkt, dfs.keys())
                 try:
                     parsed_apids = cast_to_list(parsed_apids)
                     dfs[name] = pd.DataFrame.from_dict(parsed_apids)

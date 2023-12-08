@@ -23,7 +23,7 @@ class SudaCatalogListStructure(ccsdspy.VariableLength):
             ]
         )
         self.CATALOG_LIST_MIN_SUFFIX = 0
-        self.CATALOG_LIST_MAX_SUFFIX = 223
+        self.CATALOG_LIST_MAX_SUFFIX = 224
         self._fields = []
         # self._add_beginning_fields()
         self._add_middle_fields(

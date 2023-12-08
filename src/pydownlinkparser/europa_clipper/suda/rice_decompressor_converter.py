@@ -1,10 +1,13 @@
 """Converters used for Europa-Clipper CCSDS packets."""
 import logging
 import math
+import sys
 from enum import IntEnum
 
-import bitstring
 import pandas
+
+print(sys.path)
+import bitstring
 from ccsdspy.converters import Converter
 from tqdm import tqdm
 
