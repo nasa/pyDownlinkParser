@@ -1,3 +1,4 @@
+"""Utilities to test the packet parsing."""
 import os
 import pickle
 
@@ -13,7 +14,15 @@ def compare(
     has_json_header: bool,
     create_output: bool = False,
 ):
+    """Run paring and compare results with a reference.
 
+    @param local_dir:
+    @param is_bdsem:
+    @param has_pkt_header:
+    @param has_json_header:
+    @param create_output:
+    @return:
+    """
     input_file = os.path.join(local_dir, "in.bin")
 
     with open(input_file, "rb") as f:
@@ -36,9 +45,9 @@ def compare(
 
 
 def recursive_compare(dfs, dfs_expected):
-    """
-    Compare embedded dictionnary of dictionnaries of panda dataframes. Compare the keys and the actual dataframes.
-    None should be missing or
+    """Compare embedded dictionary of dictionaries of panda dataframes. Compare the keys and the actual dataframes.
+
+    None should be missing and all should match.
     @param dfs: dictionnary of dictionbaries of dataframe
     @param dfs_expected: expected dictionnary of dictionnaries
     @return: True is the pandas dataframe are identical at the same location as in the

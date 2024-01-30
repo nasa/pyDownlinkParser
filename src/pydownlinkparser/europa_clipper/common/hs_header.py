@@ -1,3 +1,4 @@
+"""HS header fields re-used for multiple instruments."""
 import ccsdspy
 
 hs_header_fields = [
