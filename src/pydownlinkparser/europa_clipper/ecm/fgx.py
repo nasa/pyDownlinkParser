@@ -24,14 +24,14 @@ class BytesTo24BitInts(Converter):
 
 
 class FGXPacketStructure(ccsdspy.VariableLength):
-    """Flux Gate Packet Structure"""
+    """Flux Gate Packet Structure."""
 
     def __init__(self, sensor, frequency):
         """Constructor.
+
         @param sensor: sensor is 1, 2 or 3
         @param frequency: is "low" or "high", low is for both high and max rates
         """
-
         super().__init__(
             [
                 ccsdspy.PacketField(
