@@ -1,13 +1,10 @@
 """Converters used for Europa-Clipper CCSDS packets."""
 import logging
 import math
-import sys
 from enum import IntEnum
 
-import pandas
-
-print(sys.path)
 import bitstring
+import pandas
 from ccsdspy.converters import Converter
 from tqdm import tqdm
 
@@ -18,6 +15,8 @@ sample_count = None
 
 
 class SCIOType(IntEnum):
+    """Enumeration of the waveform types."""
+
     EVT_HDR = 0x01
     TOF_HG = 0x02
     TOF_LG = 0x04
@@ -46,6 +45,7 @@ class RICEDecompressor(Converter):
     }
 
     def __init__(self):
+        """Initialization."""
         self.latest_hs_pre = None
         self.latest_hs_post = None
         self.latest_ls_pre = None
@@ -53,10 +53,10 @@ class RICEDecompressor(Converter):
 
     @classmethod
     def get_elt_size(cls, sciotype: SCIOType):
-        """
+        """Get the size of waveform elements, either low or high resolution.
 
         :param sciotype: SCIOTYPE property in the current packet
-        :return: the size (resolution) of the elements stored the the data field of the packet as described in `SUDA FSW Science Packets White Paper`, section 1
+        :return: the size (resolution) of the elements stored the data field of the packet as described in `SUDA FSW Science Packets White Paper`, section 1
         """
         return cls.data_resolution_bits[sciotype]
 
@@ -141,8 +141,8 @@ class RICEDecompressor(Converter):
 
     @classmethod
     def compute_sample_count(cls, size: int, pre, post):
-        """
-        Compute the number of sample
+        """Compute the number of samples.
+
         @param size: in bits
         @param pre: from the block metadata section
         @param post: from the block metadata section
@@ -151,9 +151,10 @@ class RICEDecompressor(Converter):
         return size * (pre + 1 + post + 1)
 
     def get_current_sample_count(self, type: SCIOType):
-        """
+        """Return the number of sample expected for a given packets.
+
         Return the number of sample expected for a given packets using its
-        SCIOTYPE and the block sizes found in the preceeding metadata packet
+        SCIOTYPE and the block sizes found in the preceding metadata packet
 
         @param type: SCIOTYPE of the current packet
         @return: the number of sample expected
@@ -176,14 +177,13 @@ class RICEDecompressor(Converter):
         return sample_count
 
     def convert(self, sciotype, sciofrag, data_array):
-        """
-        Decompress all the data of all the packets
+        """Decompress all the data of all the packets.
+
         @param sciotype: list of the sciotype values
         @param sciofrag: list of the sciofrag values
         @param data_array: list of the compressed data fields
         @return: the list of the uncompressed data fields
         """
-
         decompressed_data = []
         data_buffer = []
 
@@ -261,6 +261,7 @@ class RICEDecompressor(Converter):
             logger.debug("input stream is finished")
 
     def set_pre_post(self, df: pandas.DataFrame):
+        """Set the ls/hs pre/post attributes used to compute the size of the waveform."""
         self.ls_post = iter(df["NBLOCKS_LS_POST"].to_list())
         self.ls_pre = iter(df["NBLOCKS_LS_POST"].to_list())
         self.hs_post = iter(df["NBLOCKS_HS_POST"].to_list())

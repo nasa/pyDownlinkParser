@@ -1,4 +1,4 @@
-""" Europa-Clipper ECM packet strctures"""
+"""Europa-Clipper ECM packet strctures."""
 from .fgx import fg1_high  # noqa
 from .fgx import fg1_low  # noqa
 from .fgx import fg2_high  # noqa

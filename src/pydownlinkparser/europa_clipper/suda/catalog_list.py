@@ -1,3 +1,4 @@
+"""Catalog list packet definition."""
 import ccsdspy
 
 
