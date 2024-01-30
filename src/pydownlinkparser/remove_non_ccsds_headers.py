@@ -20,6 +20,7 @@ def remove_bdsem_and_message_headers(f):
 
     bit_stream = bitstring.ConstBitStream(f)
 
+    n_pkts = 0
     while bit_stream.pos < bit_stream.length:
         control_word = bit_stream.read("uintle:32")
         sse_length = control_word
@@ -28,6 +29,8 @@ def remove_bdsem_and_message_headers(f):
         _ = bit_stream.read(32)
         packet_length = sse_length - 4  # remove the unused bytes
 
+        n_pkts += 1
+        logger.debug("read packet %i", n_pkts)
         packet_data = bit_stream.read(packet_length * 8)
         packet_data_bytes = packet_data.tobytes()
         # read CCSDS header to double check the length of the packet
