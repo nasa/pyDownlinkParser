@@ -1,3 +1,4 @@
+"""Event metadata packet field list."""
 from enum import Enum
 
 import ccsdspy
@@ -14,19 +15,19 @@ ChanPrefix = Enum(
 
 
 def _metadata_timestamp():
+    """Timestamp fields."""
     return [
-        ccsdspy.PacketField(name=f"TIMESTAMP1", bit_length=16, data_type="uint"),
-        ccsdspy.PacketField(name=f"TIMESTAMP1_PAD", bit_length=16, data_type="uint"),
+        ccsdspy.PacketField(name="TIMESTAMP1", bit_length=16, data_type="uint"),
+        ccsdspy.PacketField(name="TIMESTAMP1_PAD", bit_length=16, data_type="uint"),
         ccsdspy.PacketField(
-            name=f"TIMESTAMP2_SUBSECONDS", bit_length=16, data_type="uint"
+            name="TIMESTAMP2_SUBSECONDS", bit_length=16, data_type="uint"
         ),
-        ccsdspy.PacketField(
-            name=f"TIMESTAMP2_SECONDS", bit_length=16, data_type="uint"
-        ),
+        ccsdspy.PacketField(name="TIMESTAMP2_SECONDS", bit_length=16, data_type="uint"),
     ]
 
 
-def EVENTNUMBER_structure():
+def EVENTNUMBER_structure():  # noqa: N802
+    """Event number fields."""
     return [
         ccsdspy.PacketField(
             name="EVENTNUMBER_REMAINDER", bit_length=16, data_type="uint"
@@ -42,7 +43,8 @@ def EVENTNUMBER_structure():
     ]
 
 
-def NBLOCKS_structure():
+def NBLOCKS_structure():  # noqa: N802
+    """NBLOCKS fields."""
     return [
         ccsdspy.PacketField(name="NBLOCKS_HS_ERROR", bit_length=1, data_type="uint"),
         ccsdspy.PacketField(name="NBLOCKS_LS_ERROR", bit_length=1, data_type="uint"),
@@ -59,7 +61,8 @@ def NBLOCKS_structure():
     ]
 
 
-def LSADC_Structure():
+def LSADC_Structure():  # noqa: N802
+    """LSADC fields."""
     return [
         ccsdspy.PacketField(name="LSADC_TRIGGER_NMIN", bit_length=8, data_type="uint"),
         ccsdspy.PacketField(
@@ -74,6 +77,7 @@ def LSADC_Structure():
 
 
 def _metadata_trigger_levels(sensor: Sensors) -> list[ccsdspy.PacketField]:
+    """Trigger level fields."""
     return [
         ccsdspy.PacketField(
             name=f"HS{sensor.name}HDR1_TRIGGER_NMIN12", bit_length=11, data_type="uint"
@@ -99,7 +103,8 @@ def _metadata_trigger_levels(sensor: Sensors) -> list[ccsdspy.PacketField]:
     ]
 
 
-def TRIGGERMODE_Structure():
+def TRIGGERMODE_Structure():  # noqa: N802
+    """Trigger Mode fields."""
     return [
         ccsdspy.PacketField(name="TRIGGERMODE_ADC0I", bit_length=2, data_type="uint"),
         ccsdspy.PacketField(name="TRIGGERMODE_ADC0Q", bit_length=2, data_type="uint"),
@@ -121,6 +126,7 @@ def TRIGGERMODE_Structure():
 
 
 def _metadata_tofminmax(min_or_max: TOFMinMax) -> list[ccsdspy.PacketField]:
+    """TOF min max fields."""
     return [
         ccsdspy.PacketField(
             name=f"TOF{min_or_max.name}_ADC0I", bit_length=10, data_type="uint"
@@ -138,6 +144,7 @@ def _metadata_tofminmax(min_or_max: TOFMinMax) -> list[ccsdspy.PacketField]:
 
 
 def _metadata_lsadc_minmax(lsadc_number: int) -> list[ccsdspy.PacketField]:
+    """LSADC min/max fields."""
     return [
         ccsdspy.PacketField(
             name=f"LSADC{lsadc_number}MINMAX_MIN", bit_length=12, data_type="uint"
@@ -152,6 +159,7 @@ def _metadata_lsadc_minmax(lsadc_number: int) -> list[ccsdspy.PacketField]:
 
 
 def _metadata_tof_params(param: TOFParams) -> list[ccsdspy.PacketField]:
+    """TOF params."""
     return [
         ccsdspy.PacketField(
             name=f"TOF{param.name}_ADC0I", bit_length=10, data_type="uint"
@@ -164,13 +172,14 @@ def _metadata_tof_params(param: TOFParams) -> list[ccsdspy.PacketField]:
         ),
         ccsdspy.PacketField(
             name=f"TOF{param.name}_PAD", bit_length=2, data_type="uint"
-        ),  # TODO make a function
+        ),
     ]
 
 
 def _metadata_chan(
     prefix: ChanPrefix, numbers: ChanNum, val1: str, val2: str
 ) -> list[ccsdspy.PacketField]:
+    """CHAN fields."""
     return [
         ccsdspy.PacketField(
             name=f"{prefix.name}CHAN{numbers.name[1:]}_PAD",
