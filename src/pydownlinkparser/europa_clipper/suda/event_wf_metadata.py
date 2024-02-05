@@ -89,16 +89,16 @@ def _metadata_trigger_levels(sensor: Sensors) -> list[ccsdspy.PacketField]:
             name=f"HS{sensor.name}HDR1_TRIGGER_LEVEL", bit_length=10, data_type="uint"
         ),
         ccsdspy.PacketField(
-            name=f"HS{sensor.name}HDR2_NMAX2", bit_length=8, data_type="uint"
+            name=f"HS{sensor.name}HDR2_TRIGGER_NMAX2", bit_length=8, data_type="uint"
         ),
         ccsdspy.PacketField(
-            name=f"HS{sensor.name}HDR2_NMAX1", bit_length=8, data_type="uint"
+            name=f"HS{sensor.name}HDR2_TRIGGER_NMAX1", bit_length=8, data_type="uint"
         ),
         ccsdspy.PacketField(
-            name=f"HS{sensor.name}HDR2_NMAX1", bit_length=8, data_type="uint"
+            name=f"HS{sensor.name}HDR2_TRIGGER_NMAX1", bit_length=8, data_type="uint"
         ),
         ccsdspy.PacketField(
-            name=f"HS{sensor.name}HDR2_NMAX2", bit_length=8, data_type="uint"
+            name=f"HS{sensor.name}HDR2_TRIGGER_NMAX2", bit_length=8, data_type="uint"
         ),
     ]
 
@@ -180,6 +180,9 @@ def _metadata_chan(
     prefix: ChanPrefix, numbers: ChanNum, val1: str, val2: str
 ) -> list[ccsdspy.PacketField]:
     """CHAN fields."""
+    # "PROCHKADC", "HVPSHKADC", "LVPSHKADC0", "LVPSHKADC1", "LVPSHKADC2"
+    # "n01", "n23", "n45", "n67"
+
     return [
         ccsdspy.PacketField(
             name=f"{prefix.name}CHAN{numbers.name[1:]}_PAD",

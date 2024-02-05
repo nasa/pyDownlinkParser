@@ -1,3 +1,4 @@
+"""Health and Safety packet definition."""
 import ccsdspy
 
 hs_suda = ccsdspy.VariableLength(

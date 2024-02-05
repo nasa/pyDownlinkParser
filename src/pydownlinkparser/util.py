@@ -1,3 +1,4 @@
+"""Utilities shared."""
 import ccsdspy
 from ccsdspy.constants import BITS_PER_BYTE
 

@@ -14,6 +14,7 @@ CONVERTER_OUTPUT_FIELD = "decompressed_data"
 
 
 class SudaEventWFPacketStructure(ccsdspy.VariableLength):
+    """SUDA event waveform packet definition."""
 
     start_fields = [
         ccsdspy.PacketField(name="SHCOARSE", bit_length=32, data_type="uint"),
@@ -45,7 +46,7 @@ class SudaEventWFPacketStructure(ccsdspy.VariableLength):
     ]
 
     def __init__(self, type: wf_subpacket_types = None):
-
+        """Constructor."""
         if type == wf_subpacket_types.METADATA:
             middle_fields = METADATA_FIELDS
         else:
@@ -67,6 +68,7 @@ class SudaEventWFPacketStructure(ccsdspy.VariableLength):
             )
 
     def set_alt_inputs(self, df_dict: dict):
+        """Add additional inputs needed by the converters."""
         if "1424.event_wf_transmit_metadata" in df_dict:
             self._converters[CONVERTER_INPUT_FIELDS][1].set_pre_post(
                 df_dict["1424.event_wf_transmit_metadata"]
