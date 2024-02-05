@@ -199,7 +199,7 @@ def _metadata_chan(
 
     return [
         ccsdspy.PacketField(
-            name=f"{prefix.name}CHAN{numbers.name[1:]}_PAD",
+            name=f"{prefix.name}CHAN{numbers.name[1:]}_PAD1",
             bit_length=4,
             data_type="uint",
         ),
@@ -209,7 +209,7 @@ def _metadata_chan(
             data_type="uint",
         ),
         ccsdspy.PacketField(
-            name=f"{prefix.name}CHAN{numbers.name[1:]}_PAD",
+            name=f"{prefix.name}CHAN{numbers.name[1:]}_PAD2",
             bit_length=4,
             data_type="uint",
         ),
