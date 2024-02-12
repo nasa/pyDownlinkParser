@@ -1,8 +1,13 @@
+"""Remove non CCSDS binary code from input streams."""
 import io
+import logging
 
 import bitstring
 
+logger = logging.getLogger(__name__)
+
 BYTE_SIZE_IN_BITS = 8
+CCSDS_HEADER_LENGTH_BYTES = 8
 
 
 def remove_bdsem_and_message_headers(f):
@@ -15,21 +20,45 @@ def remove_bdsem_and_message_headers(f):
 
     bit_stream = bitstring.ConstBitStream(f)
 
+    n_pkts = 0
     while bit_stream.pos < bit_stream.length:
         control_word = bit_stream.read("uintle:32")
         sse_length = control_word
 
         # skipping 32 bits of unused
         _ = bit_stream.read(32)
-        sse_length -= 4
+        packet_length = sse_length - 4  # remove the unused bytes
 
-        packet_data = bit_stream.read(sse_length * 8)
-        buffer += packet_data.tobytes()
+        n_pkts += 1
+        logger.debug("read packet %i", n_pkts)
+        packet_data = bit_stream.read(packet_length * 8)
+        packet_data_bytes = packet_data.tobytes()
+        # read CCSDS header to double check the length of the packet
+        ccsds_packet_length = int.from_bytes(
+            packet_data_bytes[4:6], byteorder="big", signed=False
+        )
+        if ccsds_packet_length - 1 == packet_length - CCSDS_HEADER_LENGTH_BYTES:
+            buffer += packet_data_bytes
+        else:
+            apid = (
+                int.from_bytes(packet_data_bytes[0:2], byteorder="big", signed=False)
+                & 0b0000011111111111
+            )
+            sequence_cnt = (
+                int.from_bytes(packet_data_bytes[2:3], byteorder="big", signed=False)
+                & 0b0011111111111111
+            )
+            logger.warning(
+                "Skip packet apid %i, sequence count %i: length did not match with the packet length specified in the message header",
+                apid,
+                sequence_cnt,
+            )
 
     return io.BytesIO(buffer)
 
 
 def remove_bdsem(f):
+    """Remove BDSEM headers."""
     buffer = bytes()
 
     bit_stream = bitstring.ConstBitStream(f)
@@ -44,6 +73,7 @@ def remove_bdsem(f):
 
 
 def remove_mise_and_headers(f):
+    """Remove packet markers from Raw mode file."""
     header_size = 4
     ccsds_header_size = 6
     byte_size = 8
@@ -69,6 +99,7 @@ def remove_mise_and_headers(f):
 
 
 def start_sequence(seq):
+    """Returns True if seq is on the beginning of a marker between CCSDS packets."""
     return seq[1] == 0xF0 and seq[0] == seq[2] == seq[3] != 0x00
 
 
