@@ -20,8 +20,8 @@ def _metadata_timestamp_obsolete():
     The fine grained parsing is not needed anymore.
     """
     return [
-        ccsdspy.PacketField(name="TIMESTAMP1", bit_length=16, data_type="uint"),
         ccsdspy.PacketField(name="TIMESTAMP1_PAD", bit_length=16, data_type="uint"),
+        ccsdspy.PacketField(name="TIMESTAMP1", bit_length=16, data_type="uint"),
         ccsdspy.PacketField(
             name="TIMESTAMP2_SUBSECONDS", bit_length=16, data_type="uint"
         ),
@@ -35,8 +35,8 @@ def _metadata_timestamp():
     The fine grained parsing is not needed anymore.
     """
     return [
-        ccsdspy.PacketField(name="TIMESTAMP1", bit_length=16, data_type="uint"),
         ccsdspy.PacketField(name="TIMESTAMP1_PAD", bit_length=16, data_type="fill"),
+        ccsdspy.PacketField(name="TIMESTAMP1", bit_length=16, data_type="uint"),
         ccsdspy.PacketField(name="TIMESTAMP2", bit_length=32, data_type="uint"),
     ]
 
