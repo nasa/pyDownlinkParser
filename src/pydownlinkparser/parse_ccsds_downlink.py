@@ -1,11 +1,11 @@
 """CCSDS parser for binary file with multiple APIDs."""
 from __future__ import annotations
 
-import copy
 import io
 import logging
 
 import ccsdspy
+import numpy as np
 import pandas as pd
 from pydownlinkparser.europa_clipper.apid_packet_structures import apid_multi_pkt
 from pydownlinkparser.europa_clipper.apid_packet_structures import apid_packets
@@ -23,6 +23,51 @@ class ParsedDFs(dict):
             self[name].add_as_leaf(name, df)
         else:
             self[name] = df
+
+
+def calculate_crc(f):
+    """Calculate a CRC for each packet so to compared it with the CRC sent at the end of the packets.
+
+    TO BE COMPLETED.
+    Blocked by https://github.com/CCSDSPy/ccsdspy/discussions/108#discussioncomment-8448986
+    """
+    # f_is_stream = hasattr(f, "read")
+    pkt = ccsdspy.VariableLength(
+        [
+            ccsdspy.PacketArray(
+                name="body",
+                data_type="uint",
+                bit_length=8,
+                array_shape="expand",  # makes the body field expand
+            ),
+            ccsdspy.PacketField(name="checksum_real", data_type="uint", bit_length=16),
+        ]
+    )
+
+    pkt.add_converted_field(
+        [
+            "CCSDS_VERSION_NUMBER",
+            "CCSDS_PACKET_TYPE",
+            "CCSDS_SECONDARY_FLAG",
+            "CCSDS_APID",
+            "CCSDS_SEQUENCE_FLAG",
+            "CCSDS_SEQUENCE_COUNT",
+            "CCSDS_PACKET_LENGTH",
+            "body",
+        ],
+        "checksum_calculated",
+        ccsdspy.converters.CalculatedChecksum(),
+    )
+
+    parsed_result = pkt.load(f, include_primary_header=True, reset_file_obj=True)
+
+    # check that the calculated checksum and the one found in the packet are the same
+    assert np.all(
+        parsed_result["checksum_real"] == parsed_result["checksum_calculated"]
+    )
+
+    # return the found checksum for further comparisons
+    return parsed_result["checksum_real"]
 
 
 def get_sub_packet_keys(parsed_apids, sub_apid: dict):
@@ -62,14 +107,18 @@ def parse_ccsds_file(ccsds_file: str):
         logger.info("Parse APID %s", apid)
         try:
             # copy the input stream because the load function alters it
-            stream1 = copy.deepcopy(streams)
+            # stream1 = copy.deepcopy(streams)
             pkt = apid_packets.get(apid, default_pkt)
-            parsed_apids = pkt.load(streams, include_primary_header=True)
+            parsed_apids = pkt.load(
+                streams, include_primary_header=True, reset_file_obj=True
+            )
+            # TODO complete that development
+            # parsed_apids['calculated_crc'] = calculate_crc(streams)
             name = get_tab_name(apid, pkt, dfs.keys())
             if apid in apid_multi_pkt:
                 dfs[name] = ParsedDFs()
                 keys = get_sub_packet_keys(parsed_apids, apid_multi_pkt[apid])
-                buffer = distribute_packets(keys, stream1)
+                buffer = distribute_packets(keys, streams)
                 for key, minor_pkt in apid_multi_pkt[apid]["pkts"].items():
                     logger.info(
                         "Parse sub-APID %s %s",
@@ -81,10 +130,12 @@ def parse_ccsds_file(ccsds_file: str):
                             dfs[name]
                         )  # add reference to previously parsed pkt in the same group
                     parsed_sub_apid = minor_pkt.load(
-                        buffer[key], include_primary_header=True
+                        buffer[key], include_primary_header=True, reset_file_obj=True
                     )
                     inner_name = get_tab_name(apid, minor_pkt, dfs.keys())
                     parsed_sub_apid = cast_to_list(parsed_sub_apid)
+                    # TODO complete that development
+                    # parsed_sub_apid["calculated_crc"] = calculate_crc(buffer[key])
                     dfs[name][inner_name] = pd.DataFrame.from_dict(parsed_sub_apid)
 
             elif hasattr(pkt, "is_ancillary_of"):
