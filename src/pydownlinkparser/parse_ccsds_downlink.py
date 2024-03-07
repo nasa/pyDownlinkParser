@@ -5,6 +5,7 @@ import io
 import logging
 
 import ccsdspy
+import crccheck
 import numpy as np
 import pandas as pd
 from pydownlinkparser.europa_clipper.apid_packet_structures import apid_multi_pkt
@@ -25,13 +26,122 @@ class ParsedDFs(dict):
             self[name] = df
 
 
-def calculate_crc(f):
-    """Calculate a CRC for each packet so to compared it with the CRC sent at the end of the packets.
+class CCSDSParsingException(Exception):
+    """CCSDS packet parsing Exception."""
 
-    TO BE COMPLETED.
-    Blocked by https://github.com/CCSDSPy/ccsdspy/discussions/108#discussioncomment-8448986
-    """
-    # f_is_stream = hasattr(f, "read")
+    pass
+
+
+class CalculatedChecksum(ccsdspy.converters.Converter):
+    """Converter which calculates a CRC checksum from a parsed packet and compare it with the one found in the packet."""
+
+    CRC = crccheck.crc.Crc16CcittFalse
+    JUMBO_CRC = crccheck.crc.Crc32Mpeg2
+    JUMBO_TLM_PKT_LEN_BYTES = 4089  # not including the CCSDS header
+
+    def __init__(self):
+        """Initialization."""
+        pass
+
+    @classmethod
+    def calculate_crc(
+        cls,
+        ccsds_version_number,
+        ccsds_packet_type,
+        ccsds_secondary_flag,
+        ccsds_apid,
+        ccsds_sequence_flag,
+        ccsds_sequence_count,
+        ccsds_packet_length,
+        body,
+    ):
+        """Calculate one CRC from the parsed fields of one packet.
+
+        Parsed fields must be the CCSDS header and one body excluding the CRC at the end of the packet.
+        """
+        pkt_header_bit_string = ""
+        # TODO re-use header field length in ccsdspy packet_types.py
+        pkt_header_bit_string += "{0:03b}".format(ccsds_version_number)
+        pkt_header_bit_string += "{0:01b}".format(ccsds_packet_type)
+        pkt_header_bit_string += "{0:01b}".format(ccsds_secondary_flag)
+        pkt_header_bit_string += "{0:011b}".format(ccsds_apid)
+        pkt_header_bit_string += "{0:02b}".format(ccsds_sequence_flag)
+        pkt_header_bit_string += "{0:014b}".format(ccsds_sequence_count)
+        pkt_header_bit_string += "{0:016b}".format(ccsds_packet_length)
+        pkt_bytearray = [
+            int(pkt_header_bit_string[i : i + 8], 2)
+            for i in range(0, len(pkt_header_bit_string), 8)
+        ]
+        pkt_bytearray += body.tolist()
+
+        crc = (
+            cls.JUMBO_CRC
+            if ccsds_packet_length > cls.JUMBO_TLM_PKT_LEN_BYTES
+            else cls.CRC
+        )
+        return crc.calc(pkt_bytearray)
+
+    def convert(
+        self,
+        ccsds_version_number_array,
+        ccsds_packet_type_array,
+        ccsds_secondary_flag_array,
+        ccsds_apid_array,
+        ccsds_sequence_flag_array,
+        ccsds_sequence_count_array,
+        ccsds_packet_length_array,
+        body_array,
+    ):
+        """Converter to add a calculated CRC to the parsed packets.
+
+        @param ccsds_version_number_array: from the CCSDS header
+        @param ccsds_packet_type_array: from the CCSDS header
+        @param ccsds_secondary_flag_array: from the CCSDS header
+        @param ccsds_apid_array: from the CCSDS header
+        @param ccsds_sequence_flag_array: from the CCSDS header
+        @param ccsds_sequence_count_array: from the CCSDS header
+        @param ccsds_packet_length_array: from the CCSDS header
+        @param body_array: body of the packet, without the trailing CRC.
+        @return: the array of calculated CRCs.
+        """
+        calculated_crc_array = []
+
+        for (
+            ccsds_version_number,
+            ccsds_packet_type,
+            ccsds_secondary_flag,
+            ccsds_apid,
+            ccsds_sequence_flag,
+            ccsds_sequence_count,
+            ccsds_packet_length,
+            body,
+        ) in zip(
+            ccsds_version_number_array,
+            ccsds_packet_type_array,
+            ccsds_secondary_flag_array,
+            ccsds_apid_array,
+            ccsds_sequence_flag_array,
+            ccsds_sequence_count_array,
+            ccsds_packet_length_array,
+            body_array,
+        ):
+            crc = self.calculate_crc(
+                ccsds_version_number,
+                ccsds_packet_type,
+                ccsds_secondary_flag,
+                ccsds_apid,
+                ccsds_sequence_flag,
+                ccsds_sequence_count,
+                ccsds_packet_length,
+                body,
+            )
+            calculated_crc_array.append(crc)
+
+        return calculated_crc_array
+
+
+def calculate_crc(f, crc_size_bytes=2):
+    """Calculate a CRC for each packet so to compare it with the CRC sent at the end of the packets."""
     pkt = ccsdspy.VariableLength(
         [
             ccsdspy.PacketArray(
@@ -40,34 +150,38 @@ def calculate_crc(f):
                 bit_length=8,
                 array_shape="expand",  # makes the body field expand
             ),
-            ccsdspy.PacketField(name="checksum_real", data_type="uint", bit_length=16),
+            ccsdspy.PacketField(
+                name="checksum_real", data_type="uint", bit_length=8 * crc_size_bytes
+            ),
         ]
     )
 
+    input_fields = [
+        "CCSDS_VERSION_NUMBER",
+        "CCSDS_PACKET_TYPE",
+        "CCSDS_SECONDARY_FLAG",
+        "CCSDS_APID",
+        "CCSDS_SEQUENCE_FLAG",
+        "CCSDS_SEQUENCE_COUNT",
+        "CCSDS_PACKET_LENGTH",
+        "body",
+    ]
     pkt.add_converted_field(
-        [
-            "CCSDS_VERSION_NUMBER",
-            "CCSDS_PACKET_TYPE",
-            "CCSDS_SECONDARY_FLAG",
-            "CCSDS_APID",
-            "CCSDS_SEQUENCE_FLAG",
-            "CCSDS_SEQUENCE_COUNT",
-            "CCSDS_PACKET_LENGTH",
-            "body",
-        ],
+        input_fields,
         "checksum_calculated",
-        ccsdspy.converters.CalculatedChecksum(),
+        CalculatedChecksum(),
     )
 
     parsed_result = pkt.load(f, include_primary_header=True, reset_file_obj=True)
 
     # check that the calculated checksum and the one found in the packet are the same
-    assert np.all(
-        parsed_result["checksum_real"] == parsed_result["checksum_calculated"]
-    )
-
-    # return the found checksum for further comparisons
-    return parsed_result["checksum_real"]
+    if np.all(parsed_result["checksum_real"] == parsed_result["checksum_calculated"]):
+        # return the found checksum for further comparisons
+        return parsed_result["checksum_real"]
+    else:
+        raise CCSDSParsingException(
+            "The CRC calculated does not match the CRC read in the packet "
+        )
 
 
 def get_sub_packet_keys(parsed_apids, sub_apid: dict):
@@ -106,14 +220,12 @@ def parse_ccsds_file(ccsds_file: str):
     for apid, streams in stream_by_apid.items():
         logger.info("Parse APID %s", apid)
         try:
-            # copy the input stream because the load function alters it
-            # stream1 = copy.deepcopy(streams)
             pkt = apid_packets.get(apid, default_pkt)
             parsed_apids = pkt.load(
                 streams, include_primary_header=True, reset_file_obj=True
             )
             # TODO complete that development
-            # parsed_apids['calculated_crc'] = calculate_crc(streams)
+            parsed_apids["calculated_crc"] = calculate_crc(streams)
             name = get_tab_name(apid, pkt, dfs.keys())
             if apid in apid_multi_pkt:
                 dfs[name] = ParsedDFs()
@@ -134,8 +246,7 @@ def parse_ccsds_file(ccsds_file: str):
                     )
                     inner_name = get_tab_name(apid, minor_pkt, dfs.keys())
                     parsed_sub_apid = cast_to_list(parsed_sub_apid)
-                    # TODO complete that development
-                    # parsed_sub_apid["calculated_crc"] = calculate_crc(buffer[key])
+                    parsed_sub_apid["calculated_crc"] = calculate_crc(buffer[key])
                     dfs[name][inner_name] = pd.DataFrame.from_dict(parsed_sub_apid)
 
             elif hasattr(pkt, "is_ancillary_of"):
@@ -162,6 +273,8 @@ def parse_ccsds_file(ccsds_file: str):
                 "APID %i was not parseable because packet length inconsistent with CCSDS header description",
                 apid,
             )
+        except CCSDSParsingException as e:
+            logger.warning("APID %i: %s", apid, str(e))
 
     return dfs
 

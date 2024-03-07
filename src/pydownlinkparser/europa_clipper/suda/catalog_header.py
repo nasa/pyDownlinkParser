@@ -94,7 +94,9 @@ catalog_header = ccsdspy.VariableLength(
         ccsdspy.PacketField(name="O00SEC", bit_length=32, data_type="uint"),
         ccsdspy.PacketField(name="O00SUB", bit_length=32, data_type="uint"),
         ccsdspy.PacketField(name="PAGECNT", bit_length=32, data_type="uint"),
-        ccsdspy.PacketField(name="PADDING2", bit_length=645 * 32, data_type="fill"),
+        ccsdspy.PacketField(
+            name="PADDING2", bit_length=697 * 32, data_type="fill"
+        ),  # 645 in white paper
         ccsdspy.PacketField(name="SYNCCATHDR", bit_length=16, data_type="uint"),
         CRC_FOOTER,
     ]
