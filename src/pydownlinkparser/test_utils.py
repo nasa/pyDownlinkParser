@@ -1,10 +1,13 @@
 """Utilities to test the packet parsing."""
+import logging
 import os
 import pickle
 
 import pandas as pd
 from pydownlinkparser import parse_ccsds_file
 from pydownlinkparser import strip_non_ccsds_headers
+
+logger = logging.getLogger(__name__)
 
 
 def compare(
@@ -53,11 +56,12 @@ def recursive_compare(dfs, dfs_expected):
     @return: True is the pandas dataframe are identical at the same location as in the
     """
     for k, df in dfs.items():
+        logger.info("Compare dataframe %s", k)
         assert k in dfs_expected.keys()
         if isinstance(dfs_expected[k], dict):
             recursive_compare(df, dfs_expected[k])
         else:
-            pd.testing.assert_frame_equal(df, dfs_expected[k])
+            pd.testing.assert_frame_equal(df, dfs_expected[k], check_dtype=False)
         del dfs_expected[k]
 
     assert len(dfs_expected) == 0

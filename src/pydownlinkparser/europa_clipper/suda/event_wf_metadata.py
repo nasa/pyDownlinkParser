@@ -89,13 +89,13 @@ def _metadata_trigger_levels(sensor: Sensors) -> list[ccsdspy.PacketField]:
             name=f"HS{sensor.name}HDR1_TRIGGER_LEVEL", bit_length=10, data_type="uint"
         ),
         ccsdspy.PacketField(
-            name=f"HS{sensor.name}HDR2_TRIGGER_NMAX2", bit_length=8, data_type="uint"
+            name=f"HS{sensor.name}HDR2_TRIGGER_NMIN1", bit_length=8, data_type="uint"
         ),
         ccsdspy.PacketField(
             name=f"HS{sensor.name}HDR2_TRIGGER_NMAX1", bit_length=8, data_type="uint"
         ),
         ccsdspy.PacketField(
-            name=f"HS{sensor.name}HDR2_TRIGGER_NMAX1", bit_length=8, data_type="uint"
+            name=f"HS{sensor.name}HDR2_TRIGGER_NMIN2", bit_length=8, data_type="uint"
         ),
         ccsdspy.PacketField(
             name=f"HS{sensor.name}HDR2_TRIGGER_NMAX2", bit_length=8, data_type="uint"

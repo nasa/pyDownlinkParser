@@ -33,7 +33,10 @@ class CCSDSParsingException(Exception):
 
 
 class CalculatedChecksum(ccsdspy.converters.Converter):
-    """Converter which calculates a CRC checksum from a parsed packet and compare it with the one found in the packet."""
+    """Converter which calculates a CRC checksum from a parsed packet and compare it with the one found in the packet.
+
+    TODO: make something better, by supporting any packets as input...
+    """
 
     CRC = crccheck.crc.Crc16CcittFalse
     JUMBO_CRC = crccheck.crc.Crc32Mpeg2
@@ -224,7 +227,6 @@ def parse_ccsds_file(ccsds_file: str):
             parsed_apids = pkt.load(
                 streams, include_primary_header=True, reset_file_obj=True
             )
-            # TODO complete that development
             parsed_apids["calculated_crc"] = calculate_crc(streams)
             name = get_tab_name(apid, pkt, dfs.keys())
             if apid in apid_multi_pkt:
