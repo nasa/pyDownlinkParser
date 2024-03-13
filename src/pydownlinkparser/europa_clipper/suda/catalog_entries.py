@@ -32,8 +32,8 @@ class SudaCatalogEntries(ccsdspy.VariableLength):
             ccsdspy.PacketField(name="CATHDRRSVD1", bit_length=32, data_type="uint"),
             ccsdspy.PacketField(name="CATHDRRSVD2", bit_length=32, data_type="uint"),
             ccsdspy.PacketField(name="CATHDRRSVD3", bit_length=32, data_type="uint"),
-            ccsdspy.PacketField(name="CATPROCCNT", bit_length=16, data_type="uint"),
             ccsdspy.PacketField(name="CATNOISECNT", bit_length=16, data_type="uint"),
+            ccsdspy.PacketField(name="CATPROCCNT", bit_length=16, data_type="uint"),
             ccsdspy.PacketField(name="CATLASTEVT", bit_length=16, data_type="uint"),
             ccsdspy.PacketField(name="CATFIRSTEVT", bit_length=16, data_type="uint"),
             ccsdspy.PacketField(name="NOISECATEGORY", bit_length=5, data_type="uint"),
@@ -44,8 +44,8 @@ class SudaCatalogEntries(ccsdspy.VariableLength):
             # SUDA Science Packet White Paper, 3.2, second table, individual entries
             ccsdspy.PacketArray(name="INDENTRIES", bit_length=8, array_shape="expand"),
             # SUDA Science Packet White Paper, 3.2, first table
-            ccsdspy.PacketField(name="CRCCATENTRIES", bit_length=16, data_type="uint"),
             ccsdspy.PacketField(name="SYNCCATENTRIES", bit_length=16, data_type="uint"),
+            ccsdspy.PacketField(name="CRCCATENTRIES", bit_length=16, data_type="uint"),
         ]
         super().__init__(fields)
         self.name = "catalog_entries"
