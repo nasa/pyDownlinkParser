@@ -32,6 +32,12 @@ class CCSDSParsingException(Exception):
     pass
 
 
+class CRCNotCalculatedError(Exception):
+    """CRC Calculation exception."""
+
+    pass
+
+
 class CalculatedChecksum(ccsdspy.converters.Converter):
     """Converter which calculates a CRC checksum from a parsed packet and compare it with the one found in the packet.
 
@@ -175,16 +181,22 @@ def calculate_crc(f, crc_size_bytes=2):
         CalculatedChecksum(),
     )
 
-    parsed_result = pkt.load(f, include_primary_header=True, reset_file_obj=True)
+    try:
+        parsed_result = pkt.load(f, include_primary_header=True, reset_file_obj=True)
 
-    # check that the calculated checksum and the one found in the packet are the same
-    if np.all(parsed_result["checksum_real"] == parsed_result["checksum_calculated"]):
-        # return the found checksum for further comparisons
-        return parsed_result["checksum_real"]
-    else:
-        raise CCSDSParsingException(
-            "The CRC calculated does not match the CRC read in the packet "
-        )
+        # check that the calculated checksum and the one found in the packet are the same
+        if np.all(
+            parsed_result["checksum_real"] == parsed_result["checksum_calculated"]
+        ):
+            # return the found checksum for further comparisons
+            return parsed_result["checksum_real"]
+        else:
+            raise CCSDSParsingException(
+                "The CRC calculated does not match the CRC read in the packet "
+            )
+    except IndexError:
+        logger.warning("Unable to parse packet to calculate CRC")
+        raise CRCNotCalculatedError("Unable to parse packet to calculate CRC")
 
 
 def get_sub_packet_keys(parsed_apids, sub_apid: dict):
@@ -227,7 +239,10 @@ def parse_ccsds_file(ccsds_file: str):
             parsed_apids = pkt.load(
                 streams, include_primary_header=True, reset_file_obj=True
             )
-            parsed_apids["calculated_crc"] = calculate_crc(streams)
+            try:
+                parsed_apids["calculated_crc"] = calculate_crc(streams)
+            except CRCNotCalculatedError as e:
+                logger.warning(str(e))
             name = get_tab_name(apid, pkt, dfs.keys())
             if apid in apid_multi_pkt:
                 dfs[name] = ParsedDFs()
@@ -248,7 +263,10 @@ def parse_ccsds_file(ccsds_file: str):
                     )
                     inner_name = get_tab_name(apid, minor_pkt, dfs.keys())
                     parsed_sub_apid = cast_to_list(parsed_sub_apid)
-                    parsed_sub_apid["calculated_crc"] = calculate_crc(buffer[key])
+                    try:
+                        parsed_sub_apid["calculated_crc"] = calculate_crc(streams)
+                    except CRCNotCalculatedError as e:
+                        logger.warning(str(e))
                     dfs[name][inner_name] = pd.DataFrame.from_dict(parsed_sub_apid)
 
             elif hasattr(pkt, "is_ancillary_of"):
