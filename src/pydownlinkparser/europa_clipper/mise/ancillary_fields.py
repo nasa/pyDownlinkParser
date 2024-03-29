@@ -2,47 +2,42 @@
 import ccsdspy
 
 
+def analog_fields_lvps():
+    """Create LVPS_{i}_{j} fields."""
+    fields = []
+    for i in range(1, 5):
+        for j in range(0, 6):
+            fields.append(
+                ccsdspy.PacketField(
+                    name=f"LVPS_{i}_{j}", bit_length=12, data_type="uint"
+                )
+            )
+
+    # the LVPS_4* unlike the previous has up to 7 entries
+    for j in range(6, 8):
+        fields.append(
+            ccsdspy.PacketField(name=f"LVPS_4_{j}", bit_length=12, data_type="uint")
+        )
+
+    return fields
+
+
+def analog_fields_ifc():
+    """Create IFC_0_{i} fields."""
+    fields = []
+    for i in range(0, 12):
+        field = ccsdspy.PacketField(name=f"IFC_0_{i}", bit_length=12, data_type="uint")
+        fields.append(field)
+
+    # 12,13,14 are not added but 15 is added
+    fields.append(ccsdspy.PacketField(name="IFC_0_15", bit_length=12, data_type="uint"))
+    return fields
+
+
 ANCILLARY_DATA_FIELDS = [
     # Ancillary Data - Analog
-    ccsdspy.PacketField(name="LVPS_1_0", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_1_1", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_1_2", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_1_3", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_1_4", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_1_5", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_2_0", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_2_1", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_2_2", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_2_3", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_2_4", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_2_5", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_3_0", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_3_1", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_3_2", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_3_3", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_3_4", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_3_5", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_4_0", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_4_1", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_4_2", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_4_3", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_4_4", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_4_5", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_4_6", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="LVPS_4_7", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="IFC_0_0", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="IFC_0_1", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="IFC_0_2", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="IFC_0_3", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="IFC_0_4", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="IFC_0_5", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="IFC_0_6", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="IFC_0_7", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="IFC_0_8", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="IFC_0_9", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="IFC_0_10", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="IFC_0_11", bit_length=12, data_type="uint"),
-    ccsdspy.PacketField(name="IFC_0_15", bit_length=12, data_type="uint"),
+    *analog_fields_lvps(),
+    *analog_fields_ifc(),
     ccsdspy.PacketField(name="Analog_Reserved", bit_length=12, data_type="uint"),
     # Ancillary Data - Digital
     ccsdspy.PacketField(name="Digital_Reserved1", bit_length=9, data_type="uint"),

@@ -10,7 +10,7 @@ ancillary_data_pkts = [
     *SECONDARY_HEADER,
     ccsdspy.PacketField(name="Spare", bit_length=8 * 16, data_type="fill"),
     *ANCILLARY_DATA_FIELDS,
-    ccsdspy.PacketField(name="Pad", bit_length=2 * 8, data_type="str"),
+    ccsdspy.PacketField(name="Pad", bit_length=2 * 8, data_type="fill"),
     CRC_FOOTER,
 ]
 
