@@ -30,6 +30,14 @@ def get_parser():
         action="store_true",
         help="When a JSON ASCII header starts the file",
     )
+
+    parser.add_argument(
+        "--calculate-crc",
+        action="store_true",
+        help="Check if CRC in packet matches with the one calculateed, "
+        "return the calculated CRC in the spreadsheet next to the one of the packet.",
+    )
+
     return parser
 
 
@@ -56,9 +64,9 @@ def export_dfs_to_xlsx(dfs, filename1):
         add_tab_to_xlsx(dfs, writer)
 
 
-def export_ccsds_to_excel(ccsds_file, output_filename):
+def export_ccsds_to_excel(ccsds_file, output_filename, do_calculate_crc):
     """Export a binary file of CCSDS packets into an Excel file."""
-    dfs = parse_ccsds_file(ccsds_file)
+    dfs = parse_ccsds_file(ccsds_file, do_calculate_crc)
     export_dfs_to_xlsx(dfs, output_filename)
 
 
@@ -79,7 +87,7 @@ def main():
 
         file_base, _ = os.path.splitext(args.file)
         xlsx_filename = file_base + ".xlsx"
-        export_ccsds_to_excel(ccsds_file, xlsx_filename)
+        export_ccsds_to_excel(ccsds_file, xlsx_filename, args.calculate_crc)
 
 
 if __name__ == "__main__":

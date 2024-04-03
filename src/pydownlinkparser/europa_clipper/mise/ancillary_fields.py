@@ -137,11 +137,11 @@ ANCILLARY_DATA_FIELDS = [
     ccsdspy.PacketField(name="Row_reorder", bit_length=2, data_type="uint"),
     ccsdspy.PacketField(name="FPMC_Reserved2", bit_length=17, data_type="uint"),
     # Ancillary Data - Reserved 1
-    ccsdspy.PacketField(name="Reserved_1", bit_length=8 * 8, data_type="fill"),
+    ccsdspy.PacketField(name="Reserved_1", bit_length=8 * 8, data_type="uint"),
     # Ancillary Data - Software Part 2
     ccsdspy.PacketField(name="Scan_Error", bit_length=32, data_type="str"),
     # Ancillary Data - Reserved 2
-    ccsdspy.PacketField(name="Reserved_2", bit_length=8 * 8, data_type="fill"),
+    ccsdspy.PacketField(name="Reserved_2", bit_length=8 * 8, data_type="uint"),
     # Ancillary Data - Reserved 3
-    ccsdspy.PacketField(name="Reserved_3", bit_length=824 * 8, data_type="fill"),
+    ccsdspy.PacketField(name="Reserved_3", bit_length=824 * 8, data_type="uint"),
 ]

@@ -2,7 +2,21 @@
 
 This library parses binary files containing CCSDS packets of various structures (APID) and distribute them in pandas dataframes.
 
-It is modular and configurable for multiple missions.
+It is modular and configurable for multiple missions, but is being primarily developed for Europa-Clipper.
+
+## Usage
+
+Install:
+
+    pip install pip install pydownlinkparser
+
+Use
+
+    parse-downlink --file {your ccsds file}
+
+See more options with:
+
+    parse-downlink --help
 
 
 ## Developers

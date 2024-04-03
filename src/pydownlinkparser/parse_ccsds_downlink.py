@@ -228,7 +228,7 @@ def distribute_packets(keyss, stream1):
     return buffers
 
 
-def parse_ccsds_file(ccsds_file: str):
+def parse_ccsds_file(ccsds_file: str, do_calculate_crc: bool = False):
     """Parse a pure CCSDS binary file (only CCSDS packets)."""
     stream_by_apid = ccsdspy.utils.split_by_apid(ccsds_file)
     dfs = ParsedDFs()
@@ -239,10 +239,11 @@ def parse_ccsds_file(ccsds_file: str):
             parsed_apids = pkt.load(
                 streams, include_primary_header=True, reset_file_obj=True
             )
-            try:
-                parsed_apids["calculated_crc"] = calculate_crc(streams)
-            except CRCNotCalculatedError as e:
-                logger.warning(str(e))
+            if do_calculate_crc:
+                try:
+                    parsed_apids["calculated_crc"] = calculate_crc(streams)
+                except CRCNotCalculatedError as e:
+                    logger.warning(str(e))
             name = get_tab_name(apid, pkt, dfs.keys())
             if apid in apid_multi_pkt:
                 dfs[name] = ParsedDFs()
@@ -263,10 +264,11 @@ def parse_ccsds_file(ccsds_file: str):
                     )
                     inner_name = get_tab_name(apid, minor_pkt, dfs.keys())
                     parsed_sub_apid = cast_to_list(parsed_sub_apid)
-                    try:
-                        parsed_sub_apid["calculated_crc"] = calculate_crc(streams)
-                    except CRCNotCalculatedError as e:
-                        logger.warning(str(e))
+                    if do_calculate_crc:
+                        try:
+                            parsed_sub_apid["calculated_crc"] = calculate_crc(streams)
+                        except CRCNotCalculatedError as e:
+                            logger.warning(str(e))
                     dfs[name][inner_name] = pd.DataFrame.from_dict(parsed_sub_apid)
 
             elif hasattr(pkt, "is_ancillary_of"):

@@ -1,6 +1,7 @@
 """Definition of the Europa-Clipper CCSDS packets."""
 from pydownlinkparser.util import default_pkt
 
+from .e_themis import e_themis_1474
 from .ecm import fg1_high
 from .ecm import fg1_low
 from .ecm import fg2_high
@@ -51,6 +52,8 @@ apid_packets = {
     1396: diagnostic_count_pkt,
     1397: diagnostic_flag_pkt,
     1398: dark_histogram,
+    # E-THEMIS
+    1474: e_themis_1474,
 }
 
 
