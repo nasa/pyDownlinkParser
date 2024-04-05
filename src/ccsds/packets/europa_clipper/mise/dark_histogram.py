@@ -1,7 +1,7 @@
 """Dark histogram packet definition."""
 import ccsdspy
-from pydownlinkparser.europa_clipper.common import CRC_FOOTER
-from pydownlinkparser.europa_clipper.common import SECONDARY_HEADER
+from ccsds.packets.europa_clipper.common import CRC_FOOTER
+from ccsds.packets.europa_clipper.common import SECONDARY_HEADER
 
 dark_histogram = ccsdspy.VariableLength(
     [
@@ -15,3 +15,4 @@ dark_histogram = ccsdspy.VariableLength(
 )
 
 dark_histogram.name = "dark_histogram"
+dark_histogram.apid = 1398

@@ -1,13 +1,30 @@
 """Catalog header packet definition."""
 import ccsdspy
-from pydownlinkparser.europa_clipper.common.ccsds_header_footer import CRC_FOOTER
-from pydownlinkparser.europa_clipper.common.ccsds_header_footer import SECONDARY_HEADER
+from ccsds.packets.europa_clipper.common.ccsds_header_footer import CRC_FOOTER
+from ccsds.packets.europa_clipper.common.ccsds_header_footer import SECONDARY_HEADER
 
 
 catalog = ccsdspy.VariableLength(
     [ccsdspy.PacketField(name="CATHDRAID", bit_length=32, data_type="uint")]
 )
 catalog.name = "catalog"
+catalog.apid = 1426
+
+current_aid = None
+
+
+def is_new_header(aid):
+    """Identify if the packet is a catalog header or entries for APID 1426."""
+    global current_aid
+    if current_aid is None or current_aid != aid:
+        current_aid = aid
+        return True
+    else:
+        return False
+
+
+catalog.decision_field = "CATHDRAID"
+catalog.decision_fun = is_new_header
 
 
 catalog_header = ccsdspy.VariableLength(
@@ -103,3 +120,5 @@ catalog_header = ccsdspy.VariableLength(
 )
 
 catalog_header.name = "catalog_header"
+catalog_header.apid = 1426
+catalog_header.sub_apid = True

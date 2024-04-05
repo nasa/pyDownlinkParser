@@ -26,7 +26,7 @@ class BytesTo24BitInts(Converter):
 class FGXPacketStructure(ccsdspy.VariableLength):
     """Flux Gate Packet Structure."""
 
-    def __init__(self, sensor, frequency):
+    def __init__(self, sensor, frequency, apid):
         """Constructor.
 
         @param sensor: sensor is 1, 2 or 3
@@ -79,11 +79,12 @@ class FGXPacketStructure(ccsdspy.VariableLength):
         self.add_converted_field(
             "FGX_CHANNELS_8bits", "FGX_CHANNELS_24bits", BytesTo24BitInts()
         )
+        self.apid = apid
 
 
-fg1_low = FGXPacketStructure(1, "low")
-fg1_high = FGXPacketStructure(1, "high")
-fg2_low = FGXPacketStructure(2, "low")
-fg2_high = FGXPacketStructure(2, "high")
-fg3_low = FGXPacketStructure(3, "low")
-fg3_high = FGXPacketStructure(3, "high")
+fg1_low = FGXPacketStructure(1, "low", 1218)
+fg1_high = FGXPacketStructure(1, "high", 1219)
+fg2_low = FGXPacketStructure(2, "low", 1222)
+fg2_high = FGXPacketStructure(2, "high", 1223)
+fg3_low = FGXPacketStructure(3, "low", 1226)
+fg3_high = FGXPacketStructure(3, "high", 1227)

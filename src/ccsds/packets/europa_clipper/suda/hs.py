@@ -1,6 +1,7 @@
 """Health and Safety packet definition."""
 import ccsdspy
 
+# NOT USED
 hs_suda = ccsdspy.VariableLength(
     [
         ccsdspy.PacketField(name="MSCLK Seconds", bit_length=32, data_type="uint"),

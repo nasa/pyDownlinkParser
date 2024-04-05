@@ -47,3 +47,4 @@ hs_ecm_fields = [
 
 hs_ecm = ccsdspy.VariableLength(hs_header_fields + hs_ecm_fields)
 hs_ecm.name = "hs_ecm"
+hs_ecm.apid = 1216

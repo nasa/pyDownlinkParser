@@ -1,7 +1,7 @@
 """Frame support packet for ancillary data of the compressed frames."""
 import ccsdspy
-from pydownlinkparser.europa_clipper.common import CRC_FOOTER
-from pydownlinkparser.europa_clipper.common import SECONDARY_HEADER
+from ccsds.packets.europa_clipper.common import CRC_FOOTER
+from ccsds.packets.europa_clipper.common import SECONDARY_HEADER
 
 from .ancillary_fields import ANCILLARY_DATA_FIELDS
 
@@ -20,3 +20,4 @@ frame_support_pkt = ccsdspy.VariableLength(
 
 frame_support_pkt.name = "frame_support"
 frame_support_pkt.is_ancillary_of = "1393.comp_frame_pkt"
+frame_support_pkt.apid = 1394

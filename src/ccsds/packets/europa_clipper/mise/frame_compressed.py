@@ -1,7 +1,7 @@
 """Compressed frame packet definition."""
 import ccsdspy
-from pydownlinkparser.europa_clipper.common import CRC_FOOTER
-from pydownlinkparser.europa_clipper.common import SECONDARY_HEADER
+from ccsds.packets.europa_clipper.common import CRC_FOOTER
+from ccsds.packets.europa_clipper.common import SECONDARY_HEADER
 
 from .decompression_converter import MISEDecompressionConverter
 
@@ -34,3 +34,4 @@ comp_frame_pkt.add_converted_field(
     ("Comp Data", "Window Columns", "Column Binning"), "Uncomp Data", converter
 )
 comp_frame_pkt.name = "comp_frame_pkt"
+comp_frame_pkt.apid = 1393

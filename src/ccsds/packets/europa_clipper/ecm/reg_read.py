@@ -28,3 +28,4 @@ read_reg_structure.add_converted_field(
     "REG", "REG_HEX", StringifyBytesConverter(format="hex")
 )
 read_reg_structure.name = "read_reg_structure"
+read_reg_structure.apid = 1232

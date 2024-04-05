@@ -1,7 +1,7 @@
 """Dummy packet description for E-THEMIS datasets, APID 1474."""
 import ccsdspy
-from pydownlinkparser.europa_clipper.common import CRC_FOOTER
-from pydownlinkparser.europa_clipper.common import SECONDARY_HEADER
+from ccsds.packets.europa_clipper.common import CRC_FOOTER
+from ccsds.packets.europa_clipper.common import SECONDARY_HEADER
 
 e_themis_1474 = ccsdspy.VariableLength(
     [
@@ -12,3 +12,5 @@ e_themis_1474 = ccsdspy.VariableLength(
         CRC_FOOTER,
     ]
 )
+
+e_themis_1474.name = "apid 1474"

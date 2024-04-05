@@ -77,14 +77,33 @@ class SudaEventWFPacketStructure(ccsdspy.VariableLength):
 
 event_wf_transmit = SudaEventWFPacketStructure()
 event_wf_transmit.name = "event_wf_transmit"
+event_wf_transmit.apid = 1424
+
+
+def is_metadata(decision_value):
+    """Identify which packet APID 1424 is an event header (metadata)."""
+    return decision_value == 0x1
+
+
+event_wf_transmit.decision_field = "SCI0TYPE"
+event_wf_transmit.decision_fun = is_metadata
+
 
 event_wf_transmit_metadata = SudaEventWFPacketStructure(
     type=wf_subpacket_types.METADATA
 )
 event_wf_transmit_metadata.name = "event_wf_transmit_metadata"
+event_wf_transmit_metadata.apid = 1424
+event_wf_transmit_metadata.sub_apid = True
 
 event_wf_transmit_data = SudaEventWFPacketStructure(type=wf_subpacket_types.DATA)
 event_wf_transmit_data.name = "event_wf_transmit_data"
+event_wf_transmit_data.apid = 1424
+event_wf_transmit_data.sub_apid = False
 
-event_wf_fetch = SudaEventWFPacketStructure()
-event_wf_fetch.name = "event_wf_fetch"
+# NOT USED
+# TODO: need to check what APID it is associated with
+# event_wf_fetch = SudaEventWFPacketStructure()
+# event_wf_fetch.name = "event_wf_fetch"
+# event_wf_fetch.apid = 1424
+# event_wf_fetch.sub_apid = True

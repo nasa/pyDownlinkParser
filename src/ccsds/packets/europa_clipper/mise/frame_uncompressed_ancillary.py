@@ -1,7 +1,7 @@
 """Uncompressed frame, ancillary data packet definition (91th, last)."""
 import ccsdspy
-from pydownlinkparser.europa_clipper.common import CRC_FOOTER
-from pydownlinkparser.europa_clipper.common import SECONDARY_HEADER
+from ccsds.packets.europa_clipper.common import CRC_FOOTER
+from ccsds.packets.europa_clipper.common import SECONDARY_HEADER
 
 from .ancillary_fields import ANCILLARY_DATA_FIELDS
 
@@ -17,3 +17,5 @@ ancillary_data_pkts = [
 
 ancillary_data_pkt = ccsdspy.VariableLength(ancillary_data_pkts)
 ancillary_data_pkt.name = "ancillary_data_pkt"
+ancillary_data_pkt.apid = 1392
+ancillary_data_pkt.sub_apid = "92nd"

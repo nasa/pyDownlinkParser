@@ -27,3 +27,4 @@ metadata_ecm = ccsdspy.VariableLength(
     ]
 )
 metadata_ecm.name = "adp_metadata_ecm"
+metadata_ecm.apid = 1217

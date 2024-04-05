@@ -1,7 +1,7 @@
 """Diagnostic count packet definition."""
 import ccsdspy
-from pydownlinkparser.europa_clipper.common import CRC_FOOTER
-from pydownlinkparser.europa_clipper.common import SECONDARY_HEADER
+from ccsds.packets.europa_clipper.common import CRC_FOOTER
+from ccsds.packets.europa_clipper.common import SECONDARY_HEADER
 
 from .decompression_converter import MISEDecompressionConverter
 
@@ -16,6 +16,7 @@ diagnostic_count_pkt = ccsdspy.VariableLength(
 )
 
 diagnostic_count_pkt.name = "diagnositic count"
+diagnostic_count_pkt.apid = 1396
 
 converter = MISEDecompressionConverter(
     uncompressed_item_mask=0x3F,

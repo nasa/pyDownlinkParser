@@ -8,7 +8,7 @@ It is modular and configurable for multiple missions, but is being primarily dev
 
 Install:
 
-    pip install pip install pydownlinkparser
+    pip install pydownlinkparser
 
 Use
 
@@ -59,3 +59,8 @@ or
 or
 
     parse-downlink --file ./data/ecm_mag_testcase6_cmds_split_out.log --bdsem --header
+
+
+## Acknowledgment
+
+This package heavily relies on `ccsdspy` library (see https://github.com/CCSDSPy/ccsdspy).

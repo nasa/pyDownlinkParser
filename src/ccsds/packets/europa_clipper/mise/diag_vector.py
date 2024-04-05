@@ -1,7 +1,7 @@
 """Diagnostic Vector packet definition."""
 import ccsdspy
-from pydownlinkparser.europa_clipper.common.ccsds_header_footer import CRC_FOOTER
-from pydownlinkparser.europa_clipper.common.ccsds_header_footer import SECONDARY_HEADER
+from ccsds.packets.europa_clipper.common.ccsds_header_footer import CRC_FOOTER
+from ccsds.packets.europa_clipper.common.ccsds_header_footer import SECONDARY_HEADER
 
 diagnostic_vector_pkt = ccsdspy.VariableLength(
     [
@@ -14,3 +14,4 @@ diagnostic_vector_pkt = ccsdspy.VariableLength(
     ]
 )
 diagnostic_vector_pkt.name = "diagnostic_vector"
+diagnostic_vector_pkt.apid = 1395

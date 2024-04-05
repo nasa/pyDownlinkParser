@@ -1,16 +1,17 @@
 """CCSDS parser for binary file with multiple APIDs."""
 from __future__ import annotations
 
+import gc
 import io
 import logging
 
+import ccsds.packets.europa_clipper  # noqa
 import ccsdspy
 import crccheck
 import numpy as np
 import pandas as pd
-from pydownlinkparser.europa_clipper.apid_packet_structures import apid_multi_pkt
-from pydownlinkparser.europa_clipper.apid_packet_structures import apid_packets
 from pydownlinkparser.util import default_pkt
+
 
 logger = logging.getLogger(__name__)
 
@@ -199,16 +200,49 @@ def calculate_crc(f, crc_size_bytes=2):
         raise CRCNotCalculatedError("Unable to parse packet to calculate CRC")
 
 
+def get_packet_definitions():
+    """Select packet definitions which will be parsed in the first round or second round, as a refinement for some APIDs.
+
+    First round parsing: object instances of _BasePAckets which have an `apid` but no `sub_apid`
+    Second round parsing: object instances of _BasePAckets which have an `apid` and a `sub_apid`
+    """
+    # TODO use the clasees defined in Packets.py to simply the handling of packets
+    first_round_parsers = {}
+    second_round_parsers = {}
+
+    for object in gc.get_objects():
+        if isinstance(object, ccsdspy.packet_types._BasePacket) and hasattr(
+            object, "apid"
+        ):
+            if hasattr(object, "sub_apid"):
+                if object.apid not in second_round_parsers:
+                    second_round_parsers[object.apid] = {}
+                if "pkts" not in second_round_parsers[object.apid]:
+                    second_round_parsers[object.apid]["pkts"] = {}
+                second_round_parsers[object.apid]["pkts"][object.sub_apid] = object
+            else:
+                first_round_parsers[object.apid] = object
+                if hasattr(object, "decision_fun"):
+                    if object.apid not in second_round_parsers:
+                        second_round_parsers[object.apid] = {}
+                    second_round_parsers[object.apid]["pre_parser"] = object
+
+    return first_round_parsers, second_round_parsers
+
+
 def get_sub_packet_keys(parsed_apids, sub_apid: dict):
     """Identify sub-packet keys when single APId does not have consistent packet structures."""
-    decision_fun = sub_apid["decision_fun"]
-    if "decision_field" in sub_apid:
-        decision_field = sub_apid["decision_field"]
+    decision_fun = sub_apid["pre_parser"].decision_fun
+    if hasattr(sub_apid["pre_parser"], "decision_field"):
+        decision_field = sub_apid["pre_parser"].decision_field
         return [
             decision_fun(decision_value)
             for decision_value in list(parsed_apids[decision_field])
         ]
     else:
+        # all the elements of the parsed_aids dictionary have
+        # the same length which is the number of packet parsed.
+        # we pick the first one to iterate on our packets.
         first_key = list(parsed_apids.keys())[0]
         return [decision_fun() for _ in range(0, len(parsed_apids[first_key]))]
 
@@ -230,6 +264,7 @@ def distribute_packets(keyss, stream1):
 
 def parse_ccsds_file(ccsds_file: str, do_calculate_crc: bool = False):
     """Parse a pure CCSDS binary file (only CCSDS packets)."""
+    apid_packets, apid_multi_pkt = get_packet_definitions()
     stream_by_apid = ccsdspy.utils.split_by_apid(ccsds_file)
     dfs = ParsedDFs()
     for apid, streams in stream_by_apid.items():
@@ -252,7 +287,7 @@ def parse_ccsds_file(ccsds_file: str, do_calculate_crc: bool = False):
                 for key, minor_pkt in apid_multi_pkt[apid]["pkts"].items():
                     logger.info(
                         "Parse sub-APID %s %s",
-                        apid_multi_pkt[apid]["decision_fun"],
+                        apid_multi_pkt[apid]["pre_parser"].decision_fun,
                         key,
                     )
                     if hasattr(minor_pkt, "set_alt_inputs"):

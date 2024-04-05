@@ -6,6 +6,7 @@ class SudaCatalogListStructure(ccsdspy.VariableLength):
     """Catalog List packet structure definition."""
 
     name = "catalog_list"
+    apid = 1419
 
     def __init__(self):
         """Constructor."""

@@ -139,9 +139,9 @@ ANCILLARY_DATA_FIELDS = [
     # Ancillary Data - Reserved 1
     ccsdspy.PacketField(name="Reserved_1", bit_length=8 * 8, data_type="uint"),
     # Ancillary Data - Software Part 2
-    ccsdspy.PacketField(name="Scan_Error", bit_length=32, data_type="str"),
+    ccsdspy.PacketField(name="Scan_Error", bit_length=32, data_type="uint"),
     # Ancillary Data - Reserved 2
     ccsdspy.PacketField(name="Reserved_2", bit_length=8 * 8, data_type="uint"),
     # Ancillary Data - Reserved 3
-    ccsdspy.PacketField(name="Reserved_3", bit_length=824 * 8, data_type="uint"),
+    ccsdspy.PacketField(name="Reserved_3", bit_length=824 * 8, data_type="fill"),
 ]

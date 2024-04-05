@@ -49,6 +49,8 @@ class SudaCatalogEntries(ccsdspy.VariableLength):
         ]
         super().__init__(fields)
         self.name = "catalog_entries"
+        self.apid = 1426
+        self.sub_apid = False
         self.add_converted_field(
             ["NOISECATEGORY", "INDENTRIES"], "DECODEDENTRIES", InEntriesDecoder()
         )
