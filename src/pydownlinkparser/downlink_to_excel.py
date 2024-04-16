@@ -1,10 +1,13 @@
 """Utility to convert a downlink CCSDS binary file to excel."""
 import argparse
+import logging
 import os.path
 
 import pandas as pd
 from pydownlinkparser.parse_ccsds_downlink import parse_ccsds_file
 from pydownlinkparser.remove_non_ccsds_headers import strip_non_ccsds_headers
+
+logger = logging.getLogger(__name__)
 
 
 def get_parser():
@@ -55,6 +58,7 @@ def add_tab_to_xlsx(dfs, writer, name=""):
         for name, df in dfs.items():
             add_tab_to_xlsx(df, writer, name=name)
     else:
+        logger.info("Adding tab %s to excel spreadsheet", name)
         dfs.to_excel(writer, sheet_name=name, index=True)
 
 
@@ -76,7 +80,6 @@ def main():
     args = parser.parse_args()
 
     with open(args.file, "rb") as f:
-
         ccsds_file = strip_non_ccsds_headers(
             f, args.bdsem, args.pkt_header, args.json_header
         )

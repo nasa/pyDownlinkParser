@@ -5,13 +5,11 @@ import gc
 import io
 import logging
 
-import ccsds.packets.europa_clipper  # noqa
 import ccsdspy
 import crccheck
 import numpy as np
 import pandas as pd
 from pydownlinkparser.util import default_pkt
-
 
 logger = logging.getLogger(__name__)
 
@@ -200,15 +198,39 @@ def calculate_crc(f, crc_size_bytes=2):
         raise CRCNotCalculatedError("Unable to parse packet to calculate CRC")
 
 
+def import_ccsds_packet_packages():
+    """Import of the subpackages of ccsds.packets which are meant to contain the CCSDSpy packet definitions.
+
+    Stolen from https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-namespace-packages
+
+    @return: the set of the imported packages
+    """
+    import importlib
+    import pkgutil
+
+    # TODO: use a constant for ccsds.packets
+    import ccsds.packets  # noqa
+
+    def iter_namespace(ns_pkg):
+        return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
+
+    return {
+        name: importlib.import_module(name)
+        for finder, name, ispkg in iter_namespace(ccsds.packets)
+    }
+
+
 def get_packet_definitions():
     """Select packet definitions which will be parsed in the first round or second round, as a refinement for some APIDs.
 
-    First round parsing: object instances of _BasePAckets which have an `apid` but no `sub_apid`
-    Second round parsing: object instances of _BasePAckets which have an `apid` and a `sub_apid`
+    First round parsing: object instances of _BasePackets which have an `apid` but no `sub_apid`
+    Second round parsing: object instances of _BasePackets which have an `apid` and a `sub_apid`
     """
     # TODO use the clasees defined in Packets.py to simply the handling of packets
     first_round_parsers = {}
     second_round_parsers = {}
+
+    import_ccsds_packet_packages()
 
     for object in gc.get_objects():
         if isinstance(object, ccsdspy.packet_types._BasePacket) and hasattr(
@@ -265,6 +287,7 @@ def distribute_packets(keyss, stream1):
 def parse_ccsds_file(ccsds_file: str, do_calculate_crc: bool = False):
     """Parse a pure CCSDS binary file (only CCSDS packets)."""
     apid_packets, apid_multi_pkt = get_packet_definitions()
+    logger.info("Split input file per APIDs")
     stream_by_apid = ccsdspy.utils.split_by_apid(ccsds_file)
     dfs = ParsedDFs()
     for apid, streams in stream_by_apid.items():
@@ -305,6 +328,12 @@ def parse_ccsds_file(ccsds_file: str, do_calculate_crc: bool = False):
                         except CRCNotCalculatedError as e:
                             logger.warning(str(e))
                     dfs[name][inner_name] = pd.DataFrame.from_dict(parsed_sub_apid)
+                    logger.info(
+                        "%s/%s, found %i records.",
+                        name,
+                        inner_name,
+                        dfs[name][inner_name].size,
+                    )
 
             elif hasattr(pkt, "is_ancillary_of"):
                 parent_pkt = pkt.is_ancillary_of
@@ -319,10 +348,18 @@ def parse_ccsds_file(ccsds_file: str, do_calculate_crc: bool = False):
                     dfs[parent_pkt] = parsed_dfs
 
                 dfs[parent_pkt][name] = pd.DataFrame.from_dict(parsed_apids)
+                logger.info(
+                    "%s/%s, found %i records.",
+                    parent_pkt,
+                    name,
+                    dfs[parent_pkt][name].size,
+                )
             else:
                 try:
                     parsed_apids = cast_to_list(parsed_apids)
-                    dfs.add_as_leaf(name, pd.DataFrame.from_dict(parsed_apids))
+                    current_df = pd.DataFrame.from_dict(parsed_apids)
+                    dfs.add_as_leaf(name, current_df)
+                    logger.info("%s, found %i records.", name, current_df.size)
                 except ValueError as e:
                     print(str(e))
         except AssertionError:
