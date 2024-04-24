@@ -15,7 +15,11 @@ class SimpleAPIDPacket(ccsdspy.VariableLength):
 
 
 class PreParserAPIDPacket(SimpleAPIDPacket):
-    """Packet definition used to pre-parse packets which structure vary for a single APID depending on one field in this packet."""
+    """Packet definition used to pre-parse packets.
+
+    This is used when the structure vary for a single APID
+    depending on one field in this packet.
+    """
 
     def __init__(
         self,
