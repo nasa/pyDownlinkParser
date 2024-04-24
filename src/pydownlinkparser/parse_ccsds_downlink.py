@@ -14,17 +14,6 @@ from pydownlinkparser.util import default_pkt
 logger = logging.getLogger(__name__)
 
 
-class ParsedDFs(dict):
-    """Dictionary of parsed dataframes. The dictionary has a structure so that values can be dictionaries."""
-
-    def add_as_leaf(self, name: str, df: ParsedDFs | pd.DataFrame):
-        """Add the dictionary as the deepest value for the given name."""
-        if name in self.keys():
-            self[name].add_as_leaf(name, df)
-        else:
-            self[name] = df
-
-
 class CCSDSParsingException(Exception):
     """CCSDS packet parsing Exception."""
 
@@ -289,7 +278,7 @@ def parse_ccsds_file(ccsds_file: str, do_calculate_crc: bool = False):
     apid_packets, apid_multi_pkt = get_packet_definitions()
     logger.info("Split input file per APIDs")
     stream_by_apid = ccsdspy.utils.split_by_apid(ccsds_file)
-    dfs = ParsedDFs()
+    dfs = dict()
     for apid, streams in stream_by_apid.items():
         logger.info("Parse APID %s", apid)
         try:
@@ -304,7 +293,7 @@ def parse_ccsds_file(ccsds_file: str, do_calculate_crc: bool = False):
                     logger.warning(str(e))
             name = get_tab_name(apid, pkt, dfs.keys())
             if apid in apid_multi_pkt:
-                dfs[name] = ParsedDFs()
+                dfs[name] = dict()
                 keys = get_sub_packet_keys(parsed_apids, apid_multi_pkt[apid])
                 buffer = distribute_packets(keys, streams)
                 for key, minor_pkt in apid_multi_pkt[apid]["pkts"].items():
@@ -334,31 +323,11 @@ def parse_ccsds_file(ccsds_file: str, do_calculate_crc: bool = False):
                         inner_name,
                         dfs[name][inner_name].size,
                     )
-
-            elif hasattr(pkt, "is_ancillary_of"):
-                parent_pkt = pkt.is_ancillary_of
-                # move downward, to make room for the ancillary parsed packet in the same dict
-                parsed_dfs = ParsedDFs()
-                if parent_pkt in dfs.keys():
-                    if not isinstance(dfs[parent_pkt], ParsedDFs):
-                        parsed_dfs[parent_pkt] = dfs[parent_pkt]
-                        dfs[parent_pkt] = parsed_dfs
-                    # else do nothing
-                else:
-                    dfs[parent_pkt] = parsed_dfs
-
-                dfs[parent_pkt][name] = pd.DataFrame.from_dict(parsed_apids)
-                logger.info(
-                    "%s/%s, found %i records.",
-                    parent_pkt,
-                    name,
-                    dfs[parent_pkt][name].size,
-                )
             else:
                 try:
                     parsed_apids = cast_to_list(parsed_apids)
                     current_df = pd.DataFrame.from_dict(parsed_apids)
-                    dfs.add_as_leaf(name, current_df)
+                    dfs[name] = current_df
                     logger.info("%s, found %i records.", name, current_df.size)
                 except ValueError as e:
                     print(str(e))

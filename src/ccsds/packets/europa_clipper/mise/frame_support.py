@@ -19,5 +19,4 @@ frame_support_pkt = ccsdspy.VariableLength(
 )
 
 frame_support_pkt.name = "frame_support"
-frame_support_pkt.is_ancillary_of = "1393.comp_frame_pkt"
 frame_support_pkt.apid = 1394
