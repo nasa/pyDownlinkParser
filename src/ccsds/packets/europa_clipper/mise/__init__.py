@@ -9,3 +9,4 @@ from .frame_uncompressed_ancillary import ancillary_data_pkt  # noqa
 from .frame_uncompressed_last import last_frame_packet  # noqa
 from .frame_uncompressed_preparser import frame_uncompressed_preparser  # noqa
 from .frame_uncompressed_standard import standard_frame_pkt  # noqa
+from .metadata import metadata_mise  # noqa

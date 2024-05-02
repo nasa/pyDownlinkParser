@@ -6,5 +6,6 @@ from .event_wf import event_wf_transmit  # noqa
 from .event_wf import event_wf_transmit_data  # noqa
 from .event_wf import event_wf_transmit_metadata  # noqa
 from .hs import hs_suda  # noqa
+from .metadata import metadata_suda  # noqa
 
 # from .event_wf import event_wf_fetch  # noqa
