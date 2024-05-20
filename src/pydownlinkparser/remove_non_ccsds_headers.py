@@ -3,6 +3,7 @@ import io
 import logging
 
 import bitstring
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -16,12 +17,15 @@ def remove_bdsem_and_message_headers(f):
     @param f: file handler
     @return: file handler
     """
-    buffer = bytes()
+    buffer = io.BytesIO()
 
     bit_stream = bitstring.ConstBitStream(f)
 
     n_pkts = 0
+    logger.info("Remove BDSEM wrappers and message headers.")
+    pbar = tqdm(total=bit_stream.length)
     while bit_stream.pos < bit_stream.length:
+        pbar.update(bit_stream.pos)
         control_word = bit_stream.read("uintle:32")
         sse_length = control_word
 
@@ -38,7 +42,7 @@ def remove_bdsem_and_message_headers(f):
             packet_data_bytes[4:6], byteorder="big", signed=False
         )
         if ccsds_packet_length - 1 == packet_length - CCSDS_HEADER_LENGTH_BYTES:
-            buffer += packet_data_bytes
+            buffer.write(packet_data_bytes)
         else:
             apid = (
                 int.from_bytes(packet_data_bytes[0:2], byteorder="big", signed=False)
@@ -54,22 +58,28 @@ def remove_bdsem_and_message_headers(f):
                 sequence_cnt,
             )
 
-    return io.BytesIO(buffer)
+    buffer.seek(0)
+    return buffer
 
 
 def remove_bdsem(f):
     """Remove BDSEM headers."""
-    buffer = bytes()
+    buffer = io.BytesIO()
 
     bit_stream = bitstring.ConstBitStream(f)
+    logger.info("Remove BDSEM wrappers.")
+    pbar = tqdm(total=bit_stream.length)
     while bit_stream.pos < bit_stream.length:
+        pbar.update(bit_stream.pos)
         packet_header = bit_stream.read(48)
         packet_length = packet_header[-16:].uint
         packet_data = bit_stream.read(packet_length * 8)
         crc = bit_stream.read(8)
-        buffer += packet_header.tobytes() + packet_data.tobytes() + crc.tobytes()
+        buffer.write(packet_header.tobytes() + packet_data.tobytes() + crc.tobytes())
 
-    return io.BytesIO(buffer)
+    buffer.seek(0)
+
+    return buffer
 
 
 def remove_mise_and_headers(f):
@@ -78,24 +88,29 @@ def remove_mise_and_headers(f):
     ccsds_header_size = 6
     byte_size = 8
     offset_size = 1
-    buffer = bytes()
+    buffer = io.BytesIO()
 
     raw_data = f.read()
     starting_idx = []
 
-    for i in range(0, len(raw_data[:-byte_size])):
+    logger.info("Remove packet markers.")
+    logger.info("Get starting indices.")
+    for i in tqdm(range(0, len(raw_data[:-byte_size]))):
         if start_sequence(raw_data[i : i + byte_size]):
             starting_idx.append(i)
 
-    for s in starting_idx:
+    logger.info("Rebuild the binary stream skipping the markers")
+    for s in tqdm(starting_idx):
         hdr_start = s + header_size
         hdr_end = hdr_start + ccsds_header_size
         ccsds_header = raw_data[hdr_start:hdr_end]
         pkt_len = int.from_bytes(ccsds_header[-2:], byteorder="big") + offset_size
         data = raw_data[hdr_start : hdr_end + pkt_len]
-        buffer += data
+        buffer.write(data)
 
-    return io.BytesIO(buffer)
+    buffer.seek(0)
+
+    return buffer
 
 
 def start_sequence(seq):
@@ -115,6 +130,7 @@ def strip_non_ccsds_headers(
     @return: the file handler where the CCSDS packets start
     """
     if has_json_header:
+        logger.info("Skip json header.")
         file_handler.readline()
 
     if is_bdsem:

@@ -32,7 +32,7 @@ def compare(
         ccsds_file = strip_non_ccsds_headers(
             f, is_bdsem, has_pkt_header, has_json_header
         )
-        dfs = parse_ccsds_file(ccsds_file)
+        dfs = parse_ccsds_file(ccsds_file, do_calculate_crc=True)
 
     output_file = os.path.join(local_dir, "out.pickle")
 
