@@ -61,6 +61,24 @@ or
     parse-downlink --file ./data/ecm_mag_testcase6_cmds_split_out.log --bdsem --header
 
 
+#### Build and publish the package
+
+Update the version number in file `setup.cfg`
+
+Create a tag in the repostory
+
+Build the project:
+
+    python3 -m pip install --upgrade build
+    python3 -m build
+
+
+Publish the project:
+
+    twine upload dist/*
+
+
+
 ## Acknowledgment
 
 This package heavily relies on `ccsdspy` library (see https://github.com/CCSDSPy/ccsdspy).
