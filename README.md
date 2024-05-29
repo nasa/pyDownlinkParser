@@ -4,13 +4,24 @@ This library parses binary files containing CCSDS packets of various structures 
 
 It is modular and configurable for multiple missions, but is being primarily developed for Europa-Clipper.
 
-## Usage
 
-Install:
+## Users
+
+### Requirement
+
+Tested with `python 3.9`.
+
+Optionnally, but recommended, create a virtual environment:
+
+    python3 -m venv my_virtual_env
+    sournce my_virtual_env/bin/activate
+
+
+### Install
 
     pip install pydownlinkparser
 
-Use
+### Use
 
     parse-downlink --file {your ccsds file}
 
