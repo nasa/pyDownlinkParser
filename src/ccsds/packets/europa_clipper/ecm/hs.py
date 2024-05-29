@@ -1,7 +1,6 @@
 """ECM Health and Safety packet structure."""
 import ccsdspy
-
-from ..common import hs_header_fields
+from ccsds.packets.europa_clipper.common import hs_header_fields
 
 
 hs_ecm_fields = [
