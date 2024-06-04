@@ -4,9 +4,7 @@ from ccsds.packets.europa_clipper.common.ccsds_header_footer import CRC_FOOTER
 from ccsds.packets.europa_clipper.common.ccsds_header_footer import SECONDARY_HEADER
 
 
-catalog = ccsdspy.VariableLength(
-    [ccsdspy.PacketField(name="CATHDRAID", bit_length=32, data_type="uint")]
-)
+catalog = ccsdspy.VariableLength(SECONDARY_HEADER)
 catalog.name = "catalog"
 catalog.apid = 1426
 
@@ -23,7 +21,7 @@ def is_new_header(aid):
         return False
 
 
-catalog.decision_field = "CATHDRAID"
+catalog.decision_field = "Accountability ID"
 catalog.decision_fun = is_new_header
 
 
@@ -111,9 +109,17 @@ catalog_header = ccsdspy.VariableLength(
         ccsdspy.PacketField(name="O00SEC", bit_length=32, data_type="uint"),
         ccsdspy.PacketField(name="O00SUB", bit_length=32, data_type="uint"),
         ccsdspy.PacketField(name="PAGECNT", bit_length=32, data_type="uint"),
-        ccsdspy.PacketField(
-            name="PADDING2", bit_length=697 * 32, data_type="fill"
-        ),  # 645 in white paper
+        # It does not always work !
+        # ccsdspy.PacketField(
+        #    name="PADDING2", bit_length=697 * 32, data_type="fill"
+        # ),  # 645 in white paper
+        # Make it more flexible
+        ccsdspy.PacketArray(
+            name="PADDING2",
+            bit_length=8,
+            data_type="uint",
+            array_shape="expand",
+        ),  #
         ccsdspy.PacketField(name="SYNCCATHDR", bit_length=16, data_type="uint"),
         CRC_FOOTER,
     ]
