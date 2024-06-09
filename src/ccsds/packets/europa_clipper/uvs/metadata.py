@@ -13,4 +13,3 @@ uvs_metadata_fields[7] = METADATA_FIELDS[6]
 metadata_uvs = ccsdspy.VariableLength(uvs_metadata_fields)
 metadata_uvs.name = "adp_metadata_uvs"
 metadata_uvs.apid = 1537
-
