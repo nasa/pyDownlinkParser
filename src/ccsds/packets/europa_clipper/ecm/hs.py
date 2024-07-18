@@ -2,10 +2,14 @@
 import ccsdspy
 from ccsds.packets.europa_clipper.common import hs_header_fields
 
-
 hs_ecm_fields = [
+    # big endian is the default, but we want to make that explicit
+    # because in the following line we are here interested in the individual bits of the integer.
     ccsdspy.PacketField(
-        name="Source Data, Fault Detection", bit_length=32, data_type="uint"
+        name="Source Data, Fault Detection",
+        bit_length=32,
+        data_type="uint",
+        byte_order="big",
     ),
     ccsdspy.PacketField(name="FPGA_+3_I", bit_length=24, data_type="uint"),
     ccsdspy.PacketField(name="PS_+15V", bit_length=24, data_type="uint"),
