@@ -112,7 +112,7 @@ ANCILLARY_DATA_FIELDS = [
     ccsdspy.PacketField(name="Observe_Macro_ID", bit_length=8, data_type="uint"),
     ccsdspy.PacketField(name="Scan_Stall", bit_length=1, data_type="uint"),
     ccsdspy.PacketField(name="Software_Reserved", bit_length=2, data_type="uint"),
-    ccsdspy.PacketField(name="Profile_ID", bit_length=5, data_type="int"),
+    ccsdspy.PacketField(name="Profile_ID", bit_length=5, data_type="uint"),
     ccsdspy.PacketField(name="Profile_Time_Seconds", bit_length=32, data_type="uint"),
     ccsdspy.PacketField(
         name="Profile_Time_Subseconds", bit_length=16, data_type="uint"

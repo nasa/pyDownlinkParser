@@ -328,7 +328,7 @@ def parse_ccsds_file(ccsds_file: str, do_calculate_crc: bool = False):
                     parsed_apids = cast_to_list(parsed_apids)
                     current_df = pd.DataFrame.from_dict(parsed_apids)
                     dfs[name] = current_df
-                    logger.info("%s, found %i records.", name, current_df.size)
+                    logger.info("%s, found %i records.", name, len(current_df))
                 except ValueError as e:
                     print(str(e))
         except AssertionError:

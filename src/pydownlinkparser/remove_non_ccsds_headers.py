@@ -86,7 +86,6 @@ def remove_mise_and_headers(f):
     """Remove packet markers from Raw mode file."""
     header_size = 4
     ccsds_header_size = 6
-    byte_size = 8
     offset_size = 1
     buffer = io.BytesIO()
 
@@ -95,8 +94,8 @@ def remove_mise_and_headers(f):
 
     logger.info("Remove packet markers.")
     logger.info("Get starting indices.")
-    for i in tqdm(range(0, len(raw_data[:-byte_size]))):
-        if start_sequence(raw_data[i : i + byte_size]):
+    for i in tqdm(range(0, len(raw_data[:-header_size]))):
+        if start_sequence(raw_data[i : i + header_size]):
             starting_idx.append(i)
 
     logger.info("Rebuild the binary stream skipping the markers")
