@@ -1,3 +1,7 @@
+This repository is now maintained in https://github.com/ccsdspy/spac-kit
+
+The europa-clipper packet definitions are in https://github.com/nasa-jpl/spac-kit-europa-clipper
+
 # pyDownLinkParser
 
 This library parses binary files containing CCSDS packets of various structures (APID) and distribute them in pandas dataframes.
